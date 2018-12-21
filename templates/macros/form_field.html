@@ -1,0 +1,10 @@
+{% macro form_field(field) %}
+  <div class="form-group{% if field.errors %} has-error has-feedback{% endif %}">
+    {{ field.label(class='col-sm-3 control-label') }}
+    <div class="col-sm-9">
+      {{ field(class='form-control', **kwargs) }}
+      {% if field.errors %}<span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>{% endif %}
+      {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
+    </div>
+  </div>
+{% endmacro %}

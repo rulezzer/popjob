@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+
+{% from "macros/form_field.html" import form_field %}
+
+{% block title %}Profilo{% endblock %}
+
+{% block content %}
+<div class="content-section">
+	<div class="media">
+		<img class="rounded-circle account-img" src="img/profile.jpg">
+		<div class="media-body">
+			<h2 class="account-heading">Benvenuto, {{ current_user.name }}</h2>
+			<p class="text-secondary">email: {{ current_user.email }}</p>
+			<h3>I tuoi dati:</h3>
+		</div>
+	</div>
+	<!--FORM-->
+
+
+
+<div class="content-section">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Join Today</legend>
+                <div class="form-group">
+                    s{{ form.username.label(class="form-control-label") }}t
+
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        x{{ form.username(class="form-control form-control-lg") }}h
+                    {% endif %}
+
+                    <h2>Competenze</h2>
+
+                    <div class="container">
+                    	<div class="row">
+                    		<div class="col-xs-12 col-md-4 mb-5">
+                    		<!-- <form id="framework_form" method="post"> -->
+                    		
+                    		<label>Seleziona le tue skill</label>
+
+                    			<!-- select sotto -->
+                    			{{ form.skills(id="multiple", class="form-control form-control-chosen") }}
+                    			{{ current_user.skills }}
+
+                    			{{ form.skills(id="multiple", class="form-control form-control-chosen") }}
+
+								{% if form.skills.errors %}
+                        			{{ form.skills(id="multiple", class="form-control form-control-chosen is-invalid") }}
+                        			<div class="invalid-feedback">
+                            			{% for error in form.skills.errors %}
+                                			<span>{{ error }}</span>
+                            			{% endfor %}
+                        			</div>
+                    			{% else %}
+                    				wwewe
+                        			{{ form.skills(id="multiple", class="form-control form-control-chosen form-control-lg ") }}
+                    			{% endif %}
+                    			
+
+
+								{% for current_user in skills %}
+  	  								<td> a
+        								{{ skills.label }}
+    								</td>
+    								<td>
+        								{{ skills }}g
+    								</td>
+								{% endfor %}
+
+
+
+
+
+								{% for current_user in form.skills %}                                                 
+								<tr>
+									<td>id {{ current_user.skills }}</td>                  
+									<td>type {{ current_user.skills }}</td><br/>                  
+    								<td>{{ form.skills(id="multiple", class="form-control form-control-chosen ") }}</td>                                             
+    								                       
+								</tr>                                                                    
+								{% endfor %}  
+
+
+								
+
+								<select id="multiple" class="form-control form-control-chosen" multiple>
+              					{% for lol in current_user.skills %}
+                				<option value="{{ lol }}" selected="selected">l{{ lol }}</option><!-- 
+                				<option value="{{ lol }}" selected="selected">k{{ lol.value }}</option>
+                				<option value="{{ lol }}" selected="selected">d{{ lol.key }}</option>
+                				<option value="{{ lol }}" selected="selected">z{{ lol }}</option> -->
+             					{% endfor %}
+            					 </select>
+
+
+
+                    		<!-- </form> -->
+
+
+                    		</div>
+
+
+
+                    	</div>
+
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{ form.skills(id="multiple", class="form-control form-control-chosen") }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                   </div>
+                    
+
+                    
+                </div>
+               
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+	<!-- END FORM-->
+</div>
+<script type="text/javascript">
+	$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+})
+
+
+$('#modal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
+
+
+
+
+	$('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
+</script>
+
+  <script type="text/javascript">
+$('.form-control-chosen').chosen({
+  allow_single_deselect: true,
+  width: '100%'
+});
+$('.form-control-chosen-required').chosen({
+  allow_single_deselect: false,
+  width: '100%'
+});
+$('.form-control-chosen-search-threshold-100').chosen({
+  allow_single_deselect: true,
+  disable_search_threshold: 100,
+  width: '100%'
+});
+$('.form-control-chosen-optgroup').chosen({
+  width: '100%'
+});
+
+$(function() {
+  $('[title="clickable_optgroup"]').addClass('chosen-container-optgroup-clickable');
+});
+$(document).on('click', '[title="clickable_optgroup"] .group-result', function() {
+  var unselected = $(this).nextUntil('.group-result').not('.result-selected');
+  if(unselected.length) {
+    unselected.trigger('mouseup');
+  } else {
+    $(this).nextUntil('.group-result').each(function() {
+      $('a.search-choice-close[data-option-array-index="' + $(this).data('option-array-index') + '"]').trigger('click');
+    });
+  }
+});
+
+
+
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+})
+
+$('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
+
+  </script>
+<!-- 
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.6/chosen.jquery.min.js"></script>
+
+{% endblock %}
