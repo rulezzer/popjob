@@ -1,26 +1,19 @@
 {% extends "base.html" %}
-
-
 {% from "macros/form_field.html" import form_field %}
-
 {% block title %}Profilo{% endblock %}
-
 {% block content %}
 <div class="content-section">
 	<div class="media">
-		<img class="rounded-circle account-img" src="img/profile.jpg">
-		<div class="media-body">
+        <img class="img-thumbnail" src="{{ image_file }}" >
+        <div class="media-body">
 			<h2 class="account-heading">Benvenuto, {{ current_user.name }}</h2>
 			<p class="text-secondary">email: {{ current_user.email }}</p>
 			<h3>I tuoi dati:</h3>
 		</div>
 	</div>
 	<!--FORM-->
-
-
-
 <div class="content-section">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Join Today</legend>
@@ -111,8 +104,17 @@
 
 
                     	</div>
+                </div>
 
-
+               <div class="form-group">
+                    {{ form.picture.label() }}
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
+               </div>
 
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
@@ -141,12 +143,10 @@
 </div>
 
 
-                   </div>
-                    
 
-                    
-                </div>
-               
+
+
+
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}

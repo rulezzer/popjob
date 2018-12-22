@@ -1,11 +1,12 @@
 import wtforms
 from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, FieldList
 from wtforms_components import SelectMultipleField
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import ValidationError
 from flask_login import current_user
 from models import User
 from flask_wtf import FlaskForm
+import re
 
 class LoginForm(Form):
 	email = StringField("Email", validators= [validators.DataRequired()])
@@ -42,6 +43,8 @@ class RegistrationForm(Form):
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired(), validators.Length(min=2, max=20)])
     email = StringField('Email')
+    # picture= FileField(u'Image File', [validators.regexp(u'^[^/\\\\]\.jpg$')])
+    picture = FileField()
     # picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     skills = SelectMultipleField('Programming Language',
     	choices=(
@@ -77,4 +80,8 @@ class UpdateAccountForm(FlaskForm):
             user = User.objects(email=email.data).first()
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
+
+    # def validate_image(self, field):
+    #     if field.data:
+    #         field.data = re.sub(r'[^a-z0-9_.-]', '_', field.data)
 

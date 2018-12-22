@@ -7,6 +7,8 @@ import bcrypt
 from forms import LoginForm, RegistrationForm, UpdateAccountForm
 from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
+import secrets
 
 
 @app.route('/')
@@ -58,23 +60,34 @@ def logout():
 	logout_user()
 	return redirect(url_for('homepage'))
 
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/img', picture_fn)
+    form_picture.save(picture_path)
+    return picture_fn
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
 	print ('OK FATTO')
-	
-	form = UpdateAccountForm(request.form)
+
+	form = UpdateAccountForm()
 	if form.validate_on_submit():
-		
+		if form.picture.data:
+			# picture_file = save_picture(form.picture.data)
+			current_user.image_file = save_picture(form.picture.data)
+			User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
+			User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
 		User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
 		User.objects(email=current_user.email).update_one(set__skills=form.skills.data, upsert=True)
-		
 		flash('Thanks for updating', 'success')
 		return redirect(url_for('profile'))
 	elif request.method == 'GET':
 		print('STAI NELL\'IF NELLA GET')
 		form.username.data = current_user.username
 		form.email.data = current_user.email
-
-	return render_template('profile.html', form=form)
+		image_file = url_for('static', filename='img/' + current_user.image_file)
+		return render_template('profile.html', title='Account', image_file=image_file, form=form)

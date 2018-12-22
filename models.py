@@ -10,6 +10,7 @@ class User(UserMixin, db.Document):
 	surname = db.StringField(max_length=35)
 	password = db.StringField()
 	username = db.StringField()
+	image_file = db.StringField(nullable=False, default='static/img/default.jpg')
 	skills = db.ListField(db.StringField())
 
 @login_manager.user_loader
