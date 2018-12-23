@@ -1,0 +1,10 @@
+Flask==1.0.2
+flask_mongoengine==0.9.5
+Flask_Bcrypt==0.7.1
+Flask_WTF==0.14.2
+Werkzeug==0.14.1
+WTForms_Components==0.10.3
+WTForms==2.2.1
+Flask_Login==0.4.1
+python_bcrypt==0.3.2
+secrets==1.0.2

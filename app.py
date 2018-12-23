@@ -1,5 +1,4 @@
 from flask import Flask, g, abort, request
-from flask_pymongo import PyMongo
 from flask_login import LoginManager, current_user
 from config import Configuration
 from flask_mongoengine import MongoEngine, Document 
