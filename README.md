@@ -3,8 +3,10 @@ PopJob is a recruitment CMS portal
 
 ## Requirements
 
-Python3, pip3
+- Python3
+- pip3
 
+## How to install
 Install the project requirements with
 ```
 pip 3 install requirements.txt
