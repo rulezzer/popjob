@@ -1,4 +1,4 @@
-# popjob
+# popJob
 PopJob is a recruitment CMS portal  
 
 ## Requirements
