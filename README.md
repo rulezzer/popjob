@@ -9,7 +9,7 @@ PopJob is a recruitment CMS portal
 ## How to install
 Install the project requirements with
 ```
-pip3 install requirements.txt
+pip3 install -r requirements.txt
 ```
 By default the project will start on port 80 (<i>for this we need to be root</i>).<br />
 If you wanna start it on another port change it in the app.py file.
