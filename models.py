@@ -12,6 +12,7 @@ class User(UserMixin, db.Document):
 	username = db.StringField()
 	image_file = db.StringField(nullable=False, default='static/img/default.jpg')
 	skills = db.ListField(db.StringField())
+	owned_skills = db.ListField(db.StringField())
 
 @login_manager.user_loader
 def load_user(user_id):

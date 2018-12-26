@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, request, url_for
+from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_user, UserMixin, current_user, login_required, logout_user
 from app import app
 from app import login_manager
@@ -86,16 +86,15 @@ def profile():
         if form.picture.data:
             # picture_file = save_picture(form.picture.data)
             current_user.image_file = save_picture(form.picture.data)
-            User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
-        User.objects(email=current_user.email).update_one(set__skills=form.skills.data, upsert=True)
+        User.objects(email=current_user.email).update_one(set__skills=form.skills.data+form.owned_skills.data, upsert=True)
         # Save the skills that the user already have and the new ones.
         flash('Thanks for updating', 'success')
         return redirect(url_for('profile'))
     elif request.method == 'GET':
         print('STAI NELL\'IF NELLA GET')
-        form.skills.data = current_user.skills
+        form.owned_skills.data = current_user.skills
         form.username.data = current_user.username
         form.email.data = current_user.email
         image_file = url_for('static', filename='img/' + current_user.image_file)

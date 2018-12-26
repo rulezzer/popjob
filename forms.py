@@ -68,7 +68,7 @@ class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired(), validators.Length(min=2, max=20)])
     email = StringField('Email')
     picture = FileField()
-    skills = SelectMultipleField('Programming Language',
+    owned_skills = SelectMultipleField('Programming Language',
                                  choices=(
                                      ('Programming Languages', (
                                          ('asm', 'Assembly'),
@@ -89,6 +89,8 @@ class UpdateAccountForm(FlaskForm):
                                          ('potato', 'Potato')
                                      ))
                                  ), render_kw={"data-placeholder": "Select all your skills..."})
+
+    skills = owned_skills
     submit = SubmitField('Update')
 
     def validate_username(self, username):

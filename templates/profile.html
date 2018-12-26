@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content-section">
 	<div class="media">
-        <img class="account-img rounded-circle mx-auto d-block" src="{{ image_file }}"  height="150" width="150" >
+        <img class="account-img rounded-circle mx-auto d-block" src="{{ image_file }}" height="150" width="150" >
         <div class="media-body">
 			<h2 class="account-heading">Benvenuto, {{ current_user.name }}</h2>
 			<p class="text-secondary">email: {{ current_user.email }}</p>
@@ -16,7 +16,7 @@
         <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Join Today</legend>
+                <legend class="border-bottom mb-4">Your personal infos:</legend>
                 <div class="form-group">
 
                     {{ form.username.label(class="form-control-label") }}
@@ -39,68 +39,25 @@
 
                     <div class="container">
                     	<div class="row">
-                    		<div class="col-xs-12 col-md-4 mb-5">
+
                     		<!-- <form id="framework_form" method="post"> -->
-                    		
-                    		<label>Seleziona le tue skill</label>
-
-                    			<!-- select sotto -->
-                    			{{ form.skills(id="multiple", class="form-control form-control-chosen") }}
-                    			{{ current_user.skills }}
-
-                    			{{ form.skills(id="multiple", class="form-control form-control-chosen") }}
-
-								{% if form.skills.errors %}
-                        			{{ form.skills(id="multiple", class="form-control form-control-chosen is-invalid") }}
-                        			<div class="invalid-feedback">
-                            			{% for error in form.skills.errors %}
-                                			<span>{{ error }}</span>
-                            			{% endfor %}
-                        			</div>
-                    			{% else %}
-                    				wwewe
-                        			{{ form.skills(id="multiple", class="form-control form-control-chosen form-control-lg ") }}
-                    			{% endif %}
-                    			
-
-
-
-
-
-								{% for lol in form.skills %}
-								<tr>
-									<td>id {{ current_user.skills }}</td>
-									<td>type {{ current_user.skills[lol] }}</td><br/>
-    								<td>{{ form.skills(id="multiple", class="form-control form-control-chosen ") }}</td>
-
-								</tr>
-								{% endfor %}  j
-
-
-								
-
-								<select id="multiple" class="form-control form-control-chosen" multiple>l
-              					h{% for lol in current_user.skills %}k
-                				hh <option value="{{ lol }}" selected="selected">l{{ lol }}</option>u<!--
-                				<option value="{{ lol }}" selected="selected">k{{ lol.value }}o</option>
-                				<option value="{{ lol }}" selected="selected">d{{ lol.key }}l</option>
-                				<option value="{{ lol }}" selected="selected">z{{ lol }}k</option> -->
-             					{% endfor %}
-            					 </select>
-
-
-
-
-
-                            {{ form.skills(id="multiple", class="form-control form-control-chosen") }}
-
+                    		<div class="col-sm-8">
+                    		<label>Select your skills</label>
+                                </div>
+                                <div class="col-sm-4" style="text-align:right">
+                                <button type="button" title="Add new skills" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                               Add new skills
+                            </button>
+</div>
+                                <div class="col-12 mb-5">
+                            {{ form.owned_skills(type="text", class="form-control form-control-chosen") }}
+                                            <!-- Button trigger modal -->
 
 
                     		<!-- </form> -->
 
 
                     		</div>
-
 
 
                     	</div>
@@ -119,10 +76,7 @@
                     {% endif %}
                </div>
 
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                  Add new skills
-                </button>
+
 
                 <!-- Modal -->
                 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -135,7 +89,7 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                        {{ form.skills(id="multiple", class="form-control form-control-chosen") }}
+                        {{ form.skills(class="form-control form-control-chosen") }}
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -149,15 +103,12 @@
 
 
 
-
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
         </form>
     </div>
-
-
 
 
 
