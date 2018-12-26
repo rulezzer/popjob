@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content-section">
 	<div class="media">
-        <img class="img-thumbnail" src="{{ image_file }}" >
+        <img class="account-img rounded-circle mx-auto d-block" src="{{ image_file }}"  height="150" width="150" >
         <div class="media-body">
 			<h2 class="account-heading">Benvenuto, {{ current_user.name }}</h2>
 			<p class="text-secondary">email: {{ current_user.email }}</p>
@@ -18,8 +18,12 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Join Today</legend>
                 <div class="form-group">
-                    s{{ form.username.label(class="form-control-label") }}t
 
+                    {{ form.username.label(class="form-control-label") }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@</div>
+                        </div>
                     {% if form.username.errors %}
                         {{ form.username(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
@@ -28,9 +32,9 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        x{{ form.username(class="form-control form-control-lg") }}h
+                        {{ form.username(class="form-control form-control-lg") }}
                     {% endif %}
-
+                    </div>
                     <h2>Competenze</h2>
 
                     <div class="container">
@@ -60,39 +64,35 @@
                     			
 
 
-								{% for current_user in skills %}
-  	  								<td> a
-        								{{ skills.label }}
-    								</td>
-    								<td>
-        								{{ skills }}g
-    								</td>
-								{% endfor %}
 
 
 
-
-
-								{% for current_user in form.skills %}                                                 
+								{% for lol in form.skills %}
 								<tr>
-									<td>id {{ current_user.skills }}</td>                  
-									<td>type {{ current_user.skills }}</td><br/>                  
-    								<td>{{ form.skills(id="multiple", class="form-control form-control-chosen ") }}</td>                                             
-    								                       
-								</tr>                                                                    
-								{% endfor %}  
+									<td>id {{ current_user.skills }}</td>
+									<td>type {{ current_user.skills[lol] }}</td><br/>
+    								<td>{{ form.skills(id="multiple", class="form-control form-control-chosen ") }}</td>
+
+								</tr>
+								{% endfor %}  j
 
 
 								
 
-								<select id="multiple" class="form-control form-control-chosen" multiple>
-              					{% for lol in current_user.skills %}
-                				<option value="{{ lol }}" selected="selected">l{{ lol }}</option><!-- 
-                				<option value="{{ lol }}" selected="selected">k{{ lol.value }}</option>
-                				<option value="{{ lol }}" selected="selected">d{{ lol.key }}</option>
-                				<option value="{{ lol }}" selected="selected">z{{ lol }}</option> -->
+								<select id="multiple" class="form-control form-control-chosen" multiple>l
+              					h{% for lol in current_user.skills %}k
+                				hh <option value="{{ lol }}" selected="selected">l{{ lol }}</option>u<!--
+                				<option value="{{ lol }}" selected="selected">k{{ lol.value }}o</option>
+                				<option value="{{ lol }}" selected="selected">d{{ lol.key }}l</option>
+                				<option value="{{ lol }}" selected="selected">z{{ lol }}k</option> -->
              					{% endfor %}
             					 </select>
+
+
+
+
+
+                            {{ form.skills(id="multiple", class="form-control form-control-chosen") }}
 
 
 
@@ -108,7 +108,10 @@
 
                <div class="form-group">
                     {{ form.picture.label() }}
-                    {{ form.picture(class="form-control-file") }}
+               <div class="custom-file" id="customFile" style=".custom-file-input ~ .custom-file-label::after { content: "Button Text"; }">
+                    {{ form.picture(class="custom-file-input", id="customFile", type="file", accept=".jpg,.jpeg,.gif,.png") }}
+                    <label class="custom-file-label" for="customFile">Choose image</label>
+               </div>
                     {% if form.picture.errors %}
                         {% for error in form.picture.errors %}
                             <span class="text-danger">{{ error }}</span></br>
@@ -116,32 +119,32 @@
                     {% endif %}
                </div>
 
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-  Launch demo modal
-</button>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                  Add new skills
+                </button>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        {{ form.skills(id="multiple", class="form-control form-control-chosen") }}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add a skill</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        {{ form.skills(id="multiple", class="form-control form-control-chosen") }}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                          {{ form.submit(class="btn btn-outline-info") }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
 
 
@@ -192,53 +195,53 @@ $('#modal').on('show.bs.modal', function (event) {
 </script>
 
   <script type="text/javascript">
-$('.form-control-chosen').chosen({
-  allow_single_deselect: true,
-  width: '100%'
-});
-$('.form-control-chosen-required').chosen({
-  allow_single_deselect: false,
-  width: '100%'
-});
-$('.form-control-chosen-search-threshold-100').chosen({
-  allow_single_deselect: true,
-  disable_search_threshold: 100,
-  width: '100%'
-});
-$('.form-control-chosen-optgroup').chosen({
-  width: '100%'
-});
-
-$(function() {
-  $('[title="clickable_optgroup"]').addClass('chosen-container-optgroup-clickable');
-});
-$(document).on('click', '[title="clickable_optgroup"] .group-result', function() {
-  var unselected = $(this).nextUntil('.group-result').not('.result-selected');
-  if(unselected.length) {
-    unselected.trigger('mouseup');
-  } else {
-    $(this).nextUntil('.group-result').each(function() {
-      $('a.search-choice-close[data-option-array-index="' + $(this).data('option-array-index') + '"]').trigger('click');
+    $('.form-control-chosen').chosen({
+      allow_single_deselect: true,
+      width: '100%'
     });
-  }
-});
+    $('.form-control-chosen-required').chosen({
+      allow_single_deselect: false,
+      width: '100%'
+    });
+    $('.form-control-chosen-search-threshold-100').chosen({
+      allow_single_deselect: true,
+      disable_search_threshold: 100,
+      width: '100%'
+    });
+    $('.form-control-chosen-optgroup').chosen({
+      width: '100%'
+    });
+
+    $(function() {
+      $('[title="clickable_optgroup"]').addClass('chosen-container-optgroup-clickable');
+    });
+    $(document).on('click', '[title="clickable_optgroup"] .group-result', function() {
+      var unselected = $(this).nextUntil('.group-result').not('.result-selected');
+      if(unselected.length) {
+        unselected.trigger('mouseup');
+      } else {
+        $(this).nextUntil('.group-result').each(function() {
+          $('a.search-choice-close[data-option-array-index="' + $(this).data('option-array-index') + '"]').trigger('click');
+        });
+      }
+    });
 
 
 
 
-$('#myModal').on('shown.bs.modal', function () {
-  $('#myInput').trigger('focus')
-})
+    $('#myModal').on('shown.bs.modal', function () {
+      $('#myInput').trigger('focus')
+    })
 
-$('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
-})
+    $('#exampleModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget) // Button that triggered the modal
+      var recipient = button.data('whatever') // Extract info from data-* attributes
+      // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+      // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+      var modal = $(this)
+      modal.find('.modal-title').text('New message to ' + recipient)
+      modal.find('.modal-body input').val(recipient)
+    })
 
   </script>
 <!-- 
