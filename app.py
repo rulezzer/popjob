@@ -2,8 +2,9 @@ from flask import Flask, g, abort, request
 from flask_login import LoginManager, current_user
 from config import Configuration
 from flask_mongoengine import MongoEngine, Document
-
+import os
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail
 
 app = Flask(__name__)
 
@@ -30,6 +31,13 @@ db = MongoEngine(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER', 'noreply.popjob@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS', 'popjob2345')
+mail = Mail(app)
 
 
 @app.route('/add')

@@ -6,7 +6,10 @@ from wtforms.validators import ValidationError
 from flask_login import current_user
 from models import User
 from flask_wtf import FlaskForm
-import re
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from app import app
+from bson import json_util
+import json
 
 
 class LoginForm(Form):
@@ -69,26 +72,26 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email')
     picture = FileField()
     owned_skills = SelectMultipleField('Programming Language',
-                                 choices=(
-                                     ('Programming Languages', (
-                                         ('asm', 'Assembly'),
-                                         ('c', 'C'),
-                                         ('cpp', 'C++'),
-                                         ('java', 'Java'),
-                                         ('js', 'JavaScript'),
-                                         ('sql', 'SQL'),
-                                         ('plsql', 'PL/SQL'),
-                                         ('python', 'Python'),
-                                         ('php', 'PHP'),
-                                         ('ruby', 'Ruby'),
-                                         ('swift', 'Swift')
-                                     )),
-                                     ('Soft Skills', (
-                                         ('pm', 'Project Management'),
-                                         ('tw', 'Teamwork'),
-                                         ('potato', 'Potato')
-                                     ))
-                                 ), render_kw={"data-placeholder": "Select all your skills..."})
+                                       choices=(
+                                           ('Programming Languages', (
+                                               ('asm', 'Assembly'),
+                                               ('c', 'C'),
+                                               ('cpp', 'C++'),
+                                               ('java', 'Java'),
+                                               ('js', 'JavaScript'),
+                                               ('sql', 'SQL'),
+                                               ('plsql', 'PL/SQL'),
+                                               ('python', 'Python'),
+                                               ('php', 'PHP'),
+                                               ('ruby', 'Ruby'),
+                                               ('swift', 'Swift')
+                                           )),
+                                           ('Soft Skills', (
+                                               ('pm', 'Project Management'),
+                                               ('tw', 'Teamwork'),
+                                               ('potato', 'Potato')
+                                           ))
+                                       ), render_kw={"data-placeholder": "Select all your skills..."})
 
     skills = owned_skills
     submit = SubmitField('Update')
@@ -105,6 +108,23 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
 
-    # def validate_image(self, field):
-    #     if field.data:
-    #         field.data = re.sub(r'[^a-z0-9_.-]', '_', field.data)
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[validators.DataRequired()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        user = User.objects(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that email. You must register first.')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[validators.DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[validators.DataRequired(), validators.EqualTo('password')])
+    submit = SubmitField('Reset Password')
+
+# def validate_image(self, field):
+#     if field.data:
+#         field.data = re.sub(r'[^a-z0-9_.-]', '_', field.data)
