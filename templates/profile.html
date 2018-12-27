@@ -16,8 +16,8 @@
         <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Your personal infos:</legend>
-                <div class="form-group">
+{#                <legend class="border-bottom mb-4">Your personal infos:</legend>#}
+                <div class="form-group shadow-sm p-3 mb-5 bg-white rounded">
 
                     {{ form.username.label(class="form-control-label") }}
                     <div class="input-group">
@@ -50,7 +50,7 @@
                             </button>
 </div>
                                 <div class="col-12 mb-5">
-                            {{ form.owned_skills(type="text", class="form-control form-control-chosen") }}
+                            {{ form.owned_skills(id="f", type="text", class="form-control form-control-chosen") }}
                                             <!-- Button trigger modal -->
 
 
@@ -93,8 +93,7 @@
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                          {{ form.submit(class="btn btn-outline-info") }}
+                          {{ form.submit(class="btn btn-primary", value="Save" ) }}
                       </div>
                     </div>
                   </div>
@@ -146,38 +145,8 @@ $('#modal').on('show.bs.modal', function (event) {
 </script>
 
   <script type="text/javascript">
-    $('.form-control-chosen').chosen({
-      allow_single_deselect: true,
-      width: '100%'
-    });
-    $('.form-control-chosen-required').chosen({
-      allow_single_deselect: false,
-      width: '100%'
-    });
-    $('.form-control-chosen-search-threshold-100').chosen({
-      allow_single_deselect: true,
-      disable_search_threshold: 100,
-      width: '100%'
-    });
-    $('.form-control-chosen-optgroup').chosen({
-      width: '100%'
-    });
 
-    $(function() {
-      $('[title="clickable_optgroup"]').addClass('chosen-container-optgroup-clickable');
-    });
-    $(document).on('click', '[title="clickable_optgroup"] .group-result', function() {
-      var unselected = $(this).nextUntil('.group-result').not('.result-selected');
-      if(unselected.length) {
-        unselected.trigger('mouseup');
-      } else {
-        $(this).nextUntil('.group-result').each(function() {
-          $('a.search-choice-close[data-option-array-index="' + $(this).data('option-array-index') + '"]').trigger('click');
-        });
-      }
-    });
-
-
+  {#$(".form-control-chosen").attr('disabled', true).trigger("chosen:updated")#}
 
 
     $('#myModal').on('shown.bs.modal', function () {
@@ -198,7 +167,7 @@ $('#modal').on('show.bs.modal', function (event) {
 <!-- 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script> -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.6/chosen.jquery.min.js"></script>
 
 {% endblock %}

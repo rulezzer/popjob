@@ -80,7 +80,6 @@ def profile():
     #     User.objects(email=current_user.email).update_one(set__skills=current_user.skills+skform.skills.data, upsert=True)
     #     flash('Thanks for updating', 'success')
 
-
     # form.skills = current_user.skills
     if form.validate_on_submit():
         if form.picture.data:
@@ -88,7 +87,8 @@ def profile():
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
-        User.objects(email=current_user.email).update_one(set__skills=form.skills.data+form.owned_skills.data, upsert=True)
+        User.objects(email=current_user.email).update_one(set__skills=form.skills.data + form.owned_skills.data,
+                                                          upsert=True)
         # Save the skills that the user already have and the new ones.
         flash('Thanks for updating', 'success')
         return redirect(url_for('profile'))
@@ -99,3 +99,9 @@ def profile():
         form.email.data = current_user.email
         image_file = url_for('static', filename='img/' + current_user.image_file)
         return render_template('profile.html', title='Account', image_file=image_file, form=form)
+
+
+@app.route('/validate', methods=['GET', 'POST'])
+@login_required
+def validate():
+    return render_template('validate/index.html')

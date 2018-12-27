@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>{% block title %}{% endblock %} | My Blog</title>
+        <title>{% block title %}{% endblock %} | PopJob</title>
 
 
 
@@ -24,7 +24,7 @@
 
 
         <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
         <style type="text/css">
             body { padding-top: 80px; }
         </style>
@@ -48,14 +48,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{% block branding %}My Blog{% endblock %}</a>
+                <a class="navbar-brand" href="#">{% block branding %}PopJob{% endblock %}</a>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li class="nav-item"><a href="/" class="nav-link">Home</a>
                         <li class="nav-item"><a href="/user_registration" class="nav-link">User Reg</a>
                         <li class="nav-item"><a href="/login" class="nav-link">User Login</a>
-                        <li class="nav-item"><a href="/logout" class="nav-link">Logout</a>
-
 
 
                         </li>{% block extra_nav %}{% endblock %}</ul>
@@ -81,6 +79,12 @@
                     {% block sidebar %}
                     <ul class="card bg-light card-body mb-3 nav flex-column">
                         <li class="nav-item"><a href="#" class="nav-link">Sidebar item</a></li>
+                        {% if current_user.is_authenticated %}
+                            <li class="nav-item"><a href="/profile" class="nav-link">My Profile</a>
+                            <li class="nav-item"><a href="/validate" class="nav-link">Validate Skills</a>
+                            <li class="nav-item"><a href="#" class="nav-link">Export your CV</a>
+                            <li class="nav-item"><a style="color: #dc3545" href="/logout" class="nav-link">Logout</a>
+                        {% endif %}
                     </ul>
                     {% endblock %}
                 </div>

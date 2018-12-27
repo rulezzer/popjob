@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "macros/form_field.html" import form_field %}
+{% block title %}Skill Validation{% endblock %}
+{% block content %}
+<h2>Hey {{ current_user.name }}, get your skill validated!</h2>
+
+
+    User skillset: {{ current_user.skills }}
+    <select class="form-control form-control-chosen-required">
+    {% for lol in current_user.skills %}
+        <option title="{{ lol }}" name="{{ lol }}" id="{{ lol }} " label="{{ lol }}" href="http://google.com">{{ lol }}</option>
+    {% endfor %}
+
+    </select>
+
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <script>$(".form-control-chosen-required").chosen({disable_search_threshold: 10});</script>
+{% endblock %}
+
