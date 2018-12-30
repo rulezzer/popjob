@@ -32,6 +32,24 @@ class User(UserMixin, db.Document):
         return f"User('{self.username}','{self.email}', '{self.image_file}')"
 
 
+class Company(UserMixin, db.Document):
+    meta = {'collection': 'company'}
+    email = db.StringField(max_length=35)
+    password = db.StringField()
+    confirm = db.StringField()
+    nation_type = db.StringField()
+    NameCompany = db.StringField()
+    PartitaIva = db.StringField()
+    Telefono = db.StringField()
+    NameResponsabile = db.StringField()
+    SurnameResponsabile = db.StringField()
+
+#
+# @login_manager.user_loader
+# def load_company(user_id):
+#     return Company.objects(pk=user_id).first()
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.objects(pk=user_id).first()

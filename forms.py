@@ -1,5 +1,6 @@
 import wtforms
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, FieldList, RadioField
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, FieldList, RadioField, \
+    SelectField
 from wtforms_components import SelectMultipleField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import ValidationError
@@ -126,5 +127,40 @@ class ResetPasswordForm(FlaskForm):
 
 
 class QuizForm(FlaskForm):
-    option1 = RadioField( )
+    option1 = RadioField()
     submit = SubmitField('send answers')
+
+
+class SearchSkillsForm(FlaskForm):
+    skills = SelectField(u'Skills', choices=[(' ', ' '), ('asm', 'Assembly'), ('java', 'Java'),
+                                             ('php', 'PHP'), ('plsql', 'PLSQL'),
+                                             ('cpp', 'C++'), ('c', 'C'),
+                                             ('sql', 'SQL'), ('python', 'Python'),
+                                             ('ruby', 'Ruby'), ('swift', 'Swift')],
+                         render_kw={"data-placeholder": "Select a Programming Language"})
+    submit = SubmitField('Search')
+
+
+class ResultsSkills():
+    resultskills = SelectField(u'Skills', choices=[('asm', 'Assembly'), ('java', 'Java'),
+                                                   ('php', 'PHP'), ('plsql', 'PLSQL'),
+                                                   ('cpp', 'C++'), ('c', 'C'),
+                                                   ('sql', 'SQL'), ('python', 'Python'),
+                                                   ('ruby', 'Ruby'), ('swift', 'Swift')])
+
+
+class RegCompanyForm(Form):
+    nation_type = SelectField(u'Nation', choices=[(' ', ' '), ('Italia', 'Italia'), ('Stati Uniti', 'Stati Uniti'),
+                                                  ('Regno Unito', 'Regno Unito'), ('Giappone', 'Giappone')])
+    NameCompany = StringField('Name Company',
+                              validators=[validators.Regexp('^[A-Za-z]', message="Name must contains only letters")])
+    PartitaIva = StringField('PartitaIva', validators=[validators.Length(min=6, max=35)])
+    Telefono = StringField('Telefono')
+    email = StringField('email', validators=[validators.Length(min=6, max=35)])
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Password must match')
+    ])
+    confirm = PasswordField('Repeat Password')
+    NameResponsabile = StringField('NameResponsabile')
+    SurnameResponsabile = StringField('SurnameResponsabile', )

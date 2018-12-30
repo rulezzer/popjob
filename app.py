@@ -22,8 +22,8 @@ def _before_request():
 
 
 app.config["MONGODB_SETTINGS"] = {
-    'host': 'server',
-    'db': 'pass'
+    'host': 'mongodb://phaeena:chuck00@ds121182.mlab.com:21182/tecweb',
+    'db': 'tecweb'
 }
 
 db = MongoEngine(app)
@@ -35,6 +35,6 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER', 'mail')
-app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS', 'pass')
+app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER', 'noreply.popjob@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS', 'popjob2345')
 mail = Mail(app)

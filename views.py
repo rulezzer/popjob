@@ -2,11 +2,13 @@ import bcrypt, copy, os, random, secrets
 from flask import render_template, request, flash, redirect, url_for, render_template
 from flask_login import login_user, UserMixin, current_user, login_required, logout_user
 from app import db, app, login_manager, mail
-from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
-from models import User
+from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, \
+    SearchSkillsForm
+from models import User, Company
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Message
 from quiz import blueprint
+
 
 @app.route('/')
 def homepage():
@@ -35,18 +37,22 @@ def user_registration():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated == True:
         return redirect(url_for('homepage'))
     form = LoginForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            # users = mongo.db.users
-            # logging_user = users.find_one({'email' : request.form['email']})
             check_user = User.objects(email=form.email.data).first()
+            check_company = Company.objects(email=form.email.data).first()
+
             if check_user:
                 if check_password_hash(check_user['password'], form.password.data):
                     login_user(check_user)
-                    return redirect(url_for('profile'))
+                    return redirect(url_for('homepage'))
+            elif check_company:
+                if check_password_hash(check_company['password'], form.password.data):
+                    login_user(check_company)
+                    return redirect(url_for('homepage'))
     return render_template('login.html', form=form)
 
 
@@ -84,8 +90,9 @@ def profile():
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
-        User.objects(email=current_user.email).update_one(set__skills=form.skills.to_dict() + form.owned_skills.to_dict(),
-                                                          upsert=True)
+        User.objects(email=current_user.email).update_one(
+            set__skills=form.skills.to_dict() + form.owned_skills.to_dict(),
+            upsert=True)
         # Save the skills that the user already have and the new ones.
         flash('Thanks for updating', 'success')
         return redirect(url_for('profile'))
@@ -144,6 +151,7 @@ def reset_token(token):
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
 
+
 @app.route('/quiz', methods=['POST'])
 def quiz_answers():
     correct = 0
@@ -152,3 +160,39 @@ def quiz_answers():
         if blueprint.original_questions[i][0] == answered:
             correct = correct + 1
     return '<h1>Correct Answers: <u>' + str(correct) + '</u></h1>'
+
+
+# Ricerca skills dell'azienda, dopo essersi loggato
+@app.route('/searchskills', methods=['GET', 'POST'])
+@login_required
+def searchskills():
+    form = SearchSkillsForm(request.form)
+    if request.method == 'POST':
+        for lol in User.objects(skills=form.skills.data):
+            print(lol.name)
+            print(lol)
+
+        x = User.objects(skills=form.skills.data).all()
+
+        return render_template('searchskills.html', form=form, x=x)
+    elif request.method == 'GET':
+        print('STAI NELL\'IF NELLA GET')
+        return render_template('searchskills.html', form=form)
+
+
+# Registrazione Azienda
+@app.route('/company_registration', methods=['POST', 'GET'])
+def company_registration():
+    form = RegCompanyForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            existing_user = Company.objects(email=form.email.data).first()
+            if existing_user is None:
+                hashpass = generate_password_hash(form.password.data, method='sha256')
+                hey1 = Company(form.email.data, hashpass, hashpass, form.nation_type.data, form.NameCompany.data,
+                               form.PartitaIva.data,
+                               form.Telefono.data, form.NameResponsabile.data, form.SurnameResponsabile.data).save()
+                login_user(hey1)
+                flash('Thanks for registering')
+                return redirect(url_for('login'))
+    return render_template('company_registration.html', form=form)

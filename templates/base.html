@@ -10,11 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.4/js/tether.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-<!-- <script src="js/chosen.jquery.min.js"></script> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <!-- <script src="js/chosen.jquery.min.js"></script> -->
             <!-- <script  src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script> -->
-
-
-
 
 <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/component-chosen.min.css') }}"> -->
 <!-- <script src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script> -->
@@ -38,8 +37,6 @@
 
 
     <body class="{% block body_class %}{% endblock %}">
-
-        
         <div class="navbar navbar-dark bg-dark fixed-top navbar-expand-md" role="navigation">
             <div class="container">
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
@@ -53,9 +50,8 @@
                     <ul class="nav navbar-nav">
                         <li class="nav-item"><a href="/" class="nav-link">Home</a>
                         <li class="nav-item"><a href="/user_registration" class="nav-link">User Reg</a>
-                        <li class="nav-item"><a href="/login" class="nav-link">User Login</a>
-
-
+                        <li class="nav-item"><a href="/company_registration" class="nav-link">Company Reg</a>
+                        <li class="nav-item"><a href="/login" class="nav-link">Login</a>
                         </li>{% block extra_nav %}{% endblock %}</ul>
                 </div>
             </div>
@@ -77,35 +73,25 @@
                 </div>
                 <div class="col-lg-3">
                     {% block sidebar %}
-                    <ul class="card bg-light card-body mb-3 nav flex-column">
-                        <li class="nav-item"><a href="#" class="nav-link">Sidebar item</a></li>
+                        <ul class="card bg-light card-body mb-3 nav flex-column">
                         {% if current_user.is_authenticated %}
-                            <li class="nav-item"><a href="/profile" class="nav-link">My Profile</a>
-                            <li class="nav-item"><a href="/validate" class="nav-link">Validate Skills</a>
-                            <li class="nav-item"><a href="#" class="nav-link">Export your CV</a>
-                            <li class="nav-item"><a style="color: #dc3545" href="/logout" class="nav-link">Logout</a>
+                            <li class="nav-item"><a href="/profile" class="nav-link"><i class="fa fa-fw fa-user"></i>Profile</a>
+                            <li class="nav-item"><a href="/validate" class="nav-link"><i class="fa fa-fw fa-check-square"></i>Validate Skills</a>
+                            <li class="nav-item"><a href="/searchskills" class="nav-link"><i class="fa fa-fw fa-search-plus"></i>Search for Skills</a>
+                            <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-fw fa-file-text"></i>Export your CV</a>
+                            <li class="nav-item"><a style="color: #dc3545" href="/logout" class="nav-link"><i class="fa fa-fw fa-power-off"></i>Logout</a>
                         {% endif %}
                     </ul>
+
                     {% endblock %}
                 </div>
             </div>
             <div class="row">
                 <hr />
                 <footer>
-                    <p>&#xA9; Gennaro Caccavale</p>
-                </footer>
+\                </footer>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-
 
 <script type="text/javascript">
 $('.form-control-chosen').chosen({
@@ -139,14 +125,6 @@ $(document).on('click', '[title="clickable_optgroup"] .group-result', function()
   }
 });
   </script>
-
-
-
-
-
-
-
-
 
     </body>
 

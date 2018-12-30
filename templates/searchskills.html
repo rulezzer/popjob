@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "macros/form_field.html" import form_field %}
+{% block title %}Skill Search{% endblock %}
+{% block content %}
+
+
+
+<h1>Choose the skill</h1>
+
+	<form method="POST" enctype="multipart/form-data">
+
+	    {{ form.skills(class = "form-control form-control-chosen-required") }}
+
+	    <div class="form-group">
+	    
+	    <br /> 
+			{{ form.submit(class="btn btn-secondary") }}
+			<br /><br />
+
+
+			<h1><span class="badge badge-secondary">Results</span></h1>
+
+			
+	
+		   	{% for lol in x %}
+
+		   		<div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
+				  <div class="card-header ">{{ lol.name }}</div>
+				  	<div class="card-footer">
+      					<small class="text-secondary">{{ lol.email }}</small>
+    				</div>
+				</div>
+
+			
+		
+		    {% endfor %}
+		
+		
+		    {% if not x%}
+		    	
+		    	<div class="alert alert-warning" role="alert">
+				  No Results!
+				</div>
+		    {% endif %}
+
+		</div>
+
+	</form>
+
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+  <script>$(".form-control-chosen-required").chosen({disable_search_threshold: 10});</script>
+{% endblock %}
