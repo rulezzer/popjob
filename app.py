@@ -1,7 +1,7 @@
-from flask import Flask, g, abort, request
+from flask import Flask, g
 from flask_login import LoginManager, current_user
 from config import Configuration
-from flask_mongoengine import MongoEngine, Document
+from flask_mongoengine import MongoEngine
 import os
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
@@ -38,11 +38,3 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER', 'noreply.popjob@gmail.com')
 app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS', 'popjob2345')
 mail = Mail(app)
-
-
-@app.route('/add')
-def add():
-    user = mongo.db.users
-    user.insert({'name': 'Anthony', 'cognome': 'cazzo'})
-
-    return 'Added user!'

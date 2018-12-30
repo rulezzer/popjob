@@ -1,5 +1,5 @@
 import wtforms
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, FieldList
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, FieldList, RadioField
 from wtforms_components import SelectMultipleField
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms.validators import ValidationError
@@ -7,7 +7,6 @@ from flask_login import current_user
 from models import User
 from flask_wtf import FlaskForm
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from app import app
 from bson import json_util
 import json
 
@@ -125,6 +124,7 @@ class ResetPasswordForm(FlaskForm):
                                      validators=[validators.DataRequired(), validators.EqualTo('password')])
     submit = SubmitField('Reset Password')
 
-# def validate_image(self, field):
-#     if field.data:
-#         field.data = re.sub(r'[^a-z0-9_.-]', '_', field.data)
+
+class QuizForm(FlaskForm):
+    option1 = RadioField( )
+    submit = SubmitField('send answers')

@@ -1,14 +1,12 @@
-from flask import render_template, request, flash, redirect, request, url_for
+import bcrypt, copy, os, random, secrets
+from flask import render_template, request, flash, redirect, url_for, render_template
 from flask_login import login_user, UserMixin, current_user, login_required, logout_user
 from app import db, app, login_manager, mail
 from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
 from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
-import secrets
 from flask_mail import Message
-import bcrypt
-
+from quiz import blueprint
 
 @app.route('/')
 def homepage():
@@ -86,7 +84,7 @@ def profile():
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
-        User.objects(email=current_user.email).update_one(set__skills=form.skills.data + form.owned_skills.data,
+        User.objects(email=current_user.email).update_one(set__skills=form.skills.to_dict() + form.owned_skills.to_dict(),
                                                           upsert=True)
         # Save the skills that the user already have and the new ones.
         flash('Thanks for updating', 'success')
@@ -140,9 +138,17 @@ def reset_token(token):
         return redirect(url_for('reset_request'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
-
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         User.objects(email=user.email).update_one(set__password=hashed_password)
         flash('Your password has been updated! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
+
+@app.route('/quiz', methods=['POST'])
+def quiz_answers():
+    correct = 0
+    for i in blueprint.questions.keys():
+        answered = request.form[i]
+        if blueprint.original_questions[i][0] == answered:
+            correct = correct + 1
+    return '<h1>Correct Answers: <u>' + str(correct) + '</u></h1>'
