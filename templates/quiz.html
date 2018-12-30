@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "macros/form_field.html" import form_field %}
+{% block content %}
+
+                <h1>7 Wonders of the World</h1>
+                <form action='{{ url_for('quiz.quiz', next=request.args.get('next',''))  }}' method='POST'>
+                    <ol>
+                        {% for i in q %}
+                            <li>Where is <u>{{i}}</u> located?</li>
+                            {% for j in o[i] %}
+                                <input type='radio' value='{{ j }}' name='{{ i }}' />{{ j }}
+                            {% endfor %}
+                        {% endfor %}
+                    </ol>
+                    <input type="submit" value="submit" />
+                </form>
+{% endblock %}
