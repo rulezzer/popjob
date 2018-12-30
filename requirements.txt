@@ -7,3 +7,4 @@ WTForms_Components==0.10.3
 WTForms==2.2.1
 Flask_Login==0.4.1
 python_bcrypt==0.3.2
+flask-mail==0.9.1
