@@ -1,3 +1,4 @@
+import datetime
 import bcrypt, copy, os, random, secrets
 from flask import render_template, request, flash, redirect, url_for, render_template
 from flask_login import login_user, UserMixin, current_user, login_required, logout_user
@@ -26,13 +27,66 @@ def user_registration():
             # users = mongo.db.users
             # exisisting_user = users.find_one({'email' : request.form['email']})
             existing_user = User.objects(email=form.email.data).first()
+            print('a')
             if existing_user is None:
+                print('b')
                 hashpass = generate_password_hash(form.password.data, method='sha256')
-                user_creation = User(form.email.data, form.name.data, form.surname.data, hashpass).save()
+                print('4')
+                user_creation = User(email=form.email.data, name=form.name.data, surname=form.surname.data, password=hashpass).save()
+                print('3')
                 login_user(user_creation)
-                flash('Thanks for registering')
+                print('c')
+                send_confirmation_email(form.email.data)
+                print('d')
+                flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
                 return redirect(url_for('login'))
     return render_template('user_registration.html', form=form)
+
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('homepage'))
+        user = User.objects(email=user.email).first()
+        if user.email_confirmed:
+            flash('Account already confirmed. Please login.', 'info')
+        else:
+            user.email_confirmed = True
+            user.email_confirmed_on = datetime.now()
+        flash('Your email has been confirmed! ', 'success')
+        return redirect(url_for('login'))
+    return render_template('profile.html')
+    # try:
+    #     confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    #     email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
+    # except:
+    #     flash('The confirmation link is invalid or has expired.', 'error')
+    #     return redirect(url_for('users.login'))
+    #
+    # user = User.query.filter_by(email=email).first()
+    #
+    # if user.email_confirmed:
+    #     flash('Account already confirmed. Please login.', 'info')
+    # else:
+    #     user.email_confirmed = True
+    #     user.email_confirmed_on = datetime.now()
+    #     db.session.add(user)
+    #     db.session.commit()
+    #     flash('Thank you for confirming your email address!')
+    #
+    # return redirect(url_for('recipes.index'))
+
+
+def send_confirmation_email(user):
+    token = user.get_reset_token()
+    msg = Message('Confirm Email', sender='dibenedetto972@gmail.com', recipients=[user.email])
+    msg.body = f'''To confirm your email, visit the following link:
+        {url_for('confirm', token=token, _external=True)}
+        If you did not make this request then simply ignore this email and no changes will be made.
+    '''
+    mail.send(msg)
 
 
 @app.route('/login', methods=['GET', 'POST'])

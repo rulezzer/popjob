@@ -1,4 +1,6 @@
 from flask_login import UserMixin
+from mongoengine import DateTimeField
+
 from app import db, app
 from app import login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -7,6 +9,10 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 class User(UserMixin, db.Document):
     meta = {'collection': 'users'}
     email = db.StringField(max_length=35)
+    data = DateTimeField()
+    email_confirmation_sent_on = db.StringField(date=None, nullable=True)
+    email_confirmed = db.BooleanField(default=False)
+    email_confirmed_on = db.StringField(date=None, nullable=True)
     name = db.StringField(max_length=35)
     surname = db.StringField(max_length=35)
     password = db.StringField()

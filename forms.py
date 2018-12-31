@@ -34,7 +34,7 @@ def validate(self):
 class RegistrationForm(Form):
     name = StringField('Name', [validators.Regexp('^[A-Za-z]', message="Name must contains only letters")])
     surname = StringField('Surname', [validators.Length(min=4, max=25)])
-    email = StringField('Email', validators=[validators.Length(min=6, max=35)])
+    email = StringField('Email', validators=[validators.Length(min=6, max=35)]) #da cambiare con EmailField
     password = PasswordField('New Password', [
         validators.DataRequired(),
         validators.EqualTo('confirm', message='Password must match')
