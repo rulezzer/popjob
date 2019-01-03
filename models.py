@@ -1,25 +1,31 @@
 from flask_login import UserMixin
-from mongoengine import DateTimeField
+from mongoengine import DateTimeField, EmbeddedDocumentListField, EmbeddedDocument, StringField, BooleanField, ListField
 
 from app import db, app
 from app import login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
+class Cskills(EmbeddedDocument):
+    skillName = StringField()
+    date = DateTimeField()
+    status = BooleanField()
 
 class User(UserMixin, db.Document):
     meta = {'collection': 'users'}
-    email = db.StringField(max_length=35)
+    email = StringField(max_length=35)
     data = DateTimeField()
-    email_confirmation_sent_on = db.StringField(date=None, nullable=True)
-    email_confirmed = db.BooleanField(default=False)
-    email_confirmed_on = db.StringField(date=None, nullable=True)
-    name = db.StringField(max_length=35)
-    surname = db.StringField(max_length=35)
-    password = db.StringField()
-    username = db.StringField()
-    image_file = db.StringField(nullable=False, default='static/img/default.jpg')
-    skills = db.ListField(db.StringField())
-    owned_skills = db.ListField(db.StringField())
+    email_confirmation_sent_on = StringField(date=None, nullable=True)
+    email_confirmed = BooleanField(default=False)
+    email_confirmed_on = StringField(date=None, nullable=True)
+    name = StringField(max_length=35)
+    surname = StringField(max_length=35)
+    password = StringField()
+    username = StringField()
+    image_file = StringField(nullable=False, default='default.jpg')
+    owned_skills = ListField(StringField())
+    kskills = EmbeddedDocumentListField(Cskills)
+
+
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -40,15 +46,15 @@ class User(UserMixin, db.Document):
 
 class Company(UserMixin, db.Document):
     meta = {'collection': 'company'}
-    email = db.StringField(max_length=35)
-    password = db.StringField()
-    confirm = db.StringField()
-    nation_type = db.StringField()
-    NameCompany = db.StringField()
-    PartitaIva = db.StringField()
-    Telefono = db.StringField()
-    NameResponsabile = db.StringField()
-    SurnameResponsabile = db.StringField()
+    email = StringField(max_length=35)
+    password = StringField()
+    confirm = StringField()
+    nation_type = StringField()
+    NameCompany = StringField()
+    PartitaIva = StringField()
+    Telefono = StringField()
+    NameResponsabile = StringField()
+    SurnameResponsabile = StringField()
 
 #
 # @login_manager.user_loader

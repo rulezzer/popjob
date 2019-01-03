@@ -7,8 +7,7 @@
 {{ form_field(form.email) }}
 {{ form_field(form.password) }}
 {{ form_field(form.confirm) }}
-Nation Type
-{{ form.nation_type(class = 'form-control form-control-chosen') }}
+    {{ form_field(form.nation_type) }}
 {{ form_field(form.NameCompany) }}
 {{ form_field(form.PartitaIva) }}
 {{ form_field(form.Telefono) }}
@@ -28,5 +27,5 @@ Nation Type
 </form>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.6/chosen.jquery.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 {% endblock %}

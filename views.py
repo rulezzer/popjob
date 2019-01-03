@@ -1,14 +1,12 @@
-import datetime
+from datetime import datetime
 import bcrypt, copy, os, random, secrets
 from flask import render_template, request, flash, redirect, url_for, render_template
-from flask_login import login_user, UserMixin, current_user, login_required, logout_user
+from flask_login import login_user, current_user, login_required, logout_user
 from app import db, app, login_manager, mail
-from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, \
-    SearchSkillsForm
-from models import User, Company
+from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, SearchSkillsForm
+from models import User, Company, Cskills
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Message
-from quiz import blueprint
 
 
 @app.route('/')
@@ -24,40 +22,37 @@ def user_registration():
     form = RegistrationForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            # users = mongo.db.users
-            # exisisting_user = users.find_one({'email' : request.form['email']})
             existing_user = User.objects(email=form.email.data).first()
-            print('a')
             if existing_user is None:
-                print('b')
                 hashpass = generate_password_hash(form.password.data, method='sha256')
-                print('4')
                 user_creation = User(email=form.email.data, name=form.name.data, surname=form.surname.data, password=hashpass).save()
                 print('3')
                 login_user(user_creation)
-                print('c')
-                send_confirmation_email(form.email.data)
+                # User.objects(email=user_creation.email).update(set__username=str(user_creation.id)) #set the username equal to the id
+                # send_confirmation_email(form.email.data)
                 print('d')
                 flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
                 return redirect(url_for('login'))
+            else:
+                flash('User already registered for this email', 'danger')
     return render_template('user_registration.html', form=form)
 
 
-@app.route('/confirm/<token>')
-def confirm_email(token):
-    user = User.verify_reset_token(token)
-    if user is None:
-        flash('That is an invalid or expired token', 'warning')
-        return redirect(url_for('homepage'))
-        user = User.objects(email=user.email).first()
-        if user.email_confirmed:
-            flash('Account already confirmed. Please login.', 'info')
-        else:
-            user.email_confirmed = True
-            user.email_confirmed_on = datetime.now()
-        flash('Your email has been confirmed! ', 'success')
-        return redirect(url_for('login'))
-    return render_template('profile.html')
+# @app.route('/confirm/<token>')
+# def confirm_email(token):
+#     user = User.verify_reset_token(token)
+#     if user is None:
+#         flash('That is an invalid or expired token', 'warning')
+#         return redirect(url_for('homepage'))
+#         user = User.objects(email=user.email).first()
+#         if user.email_confirmed:
+#             flash('Account already confirmed. Please login.', 'info')
+#         else:
+#             user.email_confirmed = True
+#             user.email_confirmed_on = datetime.now()
+#         flash('Your email has been confirmed! ', 'success')
+#         return redirect(url_for('login'))
+#     return render_template('profile.html')
     # try:
     #     confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     #     email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
@@ -79,14 +74,14 @@ def confirm_email(token):
     # return redirect(url_for('recipes.index'))
 
 
-def send_confirmation_email(user):
-    token = user.get_reset_token()
-    msg = Message('Confirm Email', sender='dibenedetto972@gmail.com', recipients=[user.email])
-    msg.body = f'''To confirm your email, visit the following link:
-        {url_for('confirm', token=token, _external=True)}
-        If you did not make this request then simply ignore this email and no changes will be made.
-    '''
-    mail.send(msg)
+# def send_confirmation_email(user):
+#     token = user.get_reset_token()
+#     msg = Message('Confirm Email', sender='dibenedetto972@gmail.com', recipients=[user.email])
+#     msg.body = f'''To confirm your email, visit the following link:
+#         {url_for('confirm', token=token, _external=True)}
+#         If you did not make this request then simply ignore this email and no changes will be made.
+#     '''
+#     mail.send(msg)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -129,7 +124,6 @@ def save_picture(form_picture):
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    print('OK FATTO')
 
     form = UpdateAccountForm()
     # skform = AddNewSkill()
@@ -137,22 +131,28 @@ def profile():
     #     User.objects(email=current_user.email).update_one(set__skills=current_user.skills+skform.skills.data, upsert=True)
     #     flash('Thanks for updating', 'success')
 
-    # form.skills = current_user.skills
     if form.validate_on_submit():
         if form.picture.data:
             # picture_file = save_picture(form.picture.data)
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
-        User.objects(email=current_user.email).update_one(
-            set__skills=form.skills.to_dict() + form.owned_skills.to_dict(),
-            upsert=True)
+        # User.objects(email=current_user.email).update_one(set__skills=form.skills.to_dict() + form.owned_skills.to_dict(), upsert=True)
+
+        print("we")
+
+        for lol in form.skills.data:
+            utente = User.objects(email=current_user.email).get()
+            utente.kskills.append(Cskills(skillName=lol, status=False, date=datetime.now()))
+            utente.save()
+        print("we")
+
+
         # Save the skills that the user already have and the new ones.
         flash('Thanks for updating', 'success')
         return redirect(url_for('profile'))
     elif request.method == 'GET':
-        print('STAI NELL\'IF NELLA GET')
-        form.owned_skills.data = current_user.skills
+        form.owned_skills.data = [y.skillName for y in current_user.kskills ] #take the skillName from mongodb and pass them to the form
         form.username.data = current_user.username
         form.email.data = current_user.email
         image_file = url_for('static', filename='img/' + current_user.image_file)
@@ -206,35 +206,22 @@ def reset_token(token):
     return render_template('reset_token.html', title='Reset Password', form=form)
 
 
-@app.route('/quiz', methods=['POST'])
-def quiz_answers():
-    correct = 0
-    for i in blueprint.questions.keys():
-        answered = request.form[i]
-        if blueprint.original_questions[i][0] == answered:
-            correct = correct + 1
-    return '<h1>Correct Answers: <u>' + str(correct) + '</u></h1>'
 
-
-# Ricerca skills dell'azienda, dopo essersi loggato
+# Skill's search
 @app.route('/searchskills', methods=['GET', 'POST'])
 @login_required
 def searchskills():
     form = SearchSkillsForm(request.form)
     if request.method == 'POST':
-        for lol in User.objects(skills=form.skills.data):
-            print(lol.name)
-            print(lol)
 
-        x = User.objects(skills=form.skills.data).all()
+        x = User.objects(kskills__skillName=form.skills.data).all()
 
         return render_template('searchskills.html', form=form, x=x)
     elif request.method == 'GET':
-        print('STAI NELL\'IF NELLA GET')
         return render_template('searchskills.html', form=form)
 
 
-# Registrazione Azienda
+# Company Registration
 @app.route('/company_registration', methods=['POST', 'GET'])
 def company_registration():
     form = RegCompanyForm(request.form)
