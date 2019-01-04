@@ -126,30 +126,26 @@ def save_picture(form_picture):
 def profile():
 
     form = UpdateAccountForm()
-    # skform = AddNewSkill()
-    # if skform.submit.data:
-    #     User.objects(email=current_user.email).update_one(set__skills=current_user.skills+skform.skills.data, upsert=True)
-    #     flash('Thanks for updating', 'success')
 
     if form.validate_on_submit():
         if form.picture.data:
-            # picture_file = save_picture(form.picture.data)
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
         # User.objects(email=current_user.email).update_one(set__skills=form.skills.to_dict() + form.owned_skills.to_dict(), upsert=True)
 
-        print("we")
-
+        flag=False #flag to avoid the multiple generation of flashes
         for lol in form.skills.data:
-            utente = User.objects(email=current_user.email).get()
-            utente.kskills.append(Cskills(skillName=lol, status=False, date=datetime.now()))
-            utente.save()
-        print("we")
+            if User.objects(email=current_user.email, kskills__skillName__ne=lol):
+                flag=True
+                utente = User.objects(email=current_user.email).get()
+                utente.kskills.append(Cskills(skillName=lol, status=False, date=datetime.now()))
+                utente.save()
+            else:
+                flash(lol+' is already present', 'danger')
+        if flag:
+            flash('Thanks for updating', 'success')
 
-
-        # Save the skills that the user already have and the new ones.
-        flash('Thanks for updating', 'success')
         return redirect(url_for('profile'))
     elif request.method == 'GET':
         form.owned_skills.data = [y.skillName for y in current_user.kskills ] #take the skillName from mongodb and pass them to the form
@@ -237,3 +233,15 @@ def company_registration():
                 flash('Thanks for registering')
                 return redirect(url_for('login'))
     return render_template('company_registration.html', form=form)
+
+
+@app.route('/profile/<id>', methods=['POST', 'GET'])
+def profileView(id):
+    form=UpdateAccountForm()
+    profile = User.objects(id=id).first()
+    print(id)
+    print(profile.name)
+    form.owned_skills.data = [y.skillName for y in profile.kskills]  # take the skillName from mongodb and pass them to the form
+    form.username.data = profile.username
+    form.email.data = profile.email
+    return render_template('profile_view.html', form=form, profile=profile)

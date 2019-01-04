@@ -9,23 +9,31 @@
 
 	<form method="POST" enctype="multipart/form-data">
 
-	    {{ form.skills(class = "form-control form-control-chosen-required") }}
-
-	    <div class="form-group">
-	    
-	    <br /> 
-			{{ form.submit(class="btn btn-secondary") }}
+	     <div class="row">
+            <div class="col-10 ">
+                {{ form.skills(class = "form-control form-control-chosen-required") }}
+            </div>
+            <div class="col-2 ">
+                {{ form.submit(class="btn btn-secondary btn-block") }}
+            </div>
+        </div>
 			<br /><br />
 
+        <div class="form-group">
 
-			<h1><span class="badge badge-secondary">Results</span></h1>
+			<h1>Results</h1>
 
 
 
 		   	{% for lol in x %}
 
 		   		<div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
-				  <div class="card-header ">{{ lol.name }}</div>
+				  <div class="card-header " style="display: inline" >
+                      <a href="./profile/{{ lol.id }}" style="display: inline; text-align: right"><b>{{ lol.name }} {{ lol.surname }}</b>
+                       <div style="display: inline; float:right"><i class="fas fa-link" ></i></div>
+                      </a>
+
+                  </div>
 				  	<div class="card-footer">
       					<small class="text-secondary">{{ lol.email }}</small>
     				</div>
@@ -48,7 +56,6 @@
 	</form>
 
 
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
   <script>$(".form-control-chosen-required").chosen({disable_search_threshold: 10});</script>
 {% endblock %}

@@ -6,14 +6,14 @@
 	<div class="media">
         <img class="account-img rounded-circle mx-auto d-block" src="{{ image_file }}" height="150" width="150" >
         <div class="media-body">
-			<h2 class="account-heading">Benvenuto, {{ current_user.name }}</h2>
-			<p class="text-secondary">email: {{ current_user.email }}</p>
+			<h2 class="account-heading">{{ profile.name }}'s Profile</h2>
+			<p class="text-secondary">email: {{ profile.email }}</p>
 			<h3>I tuoi dati:</h3>
 		</div>
 	</div>
 	<!--FORM-->
 <div class="content-section">
-        <form method="POST" enctype="multipart/form-data">
+        <form method="GET" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
 {#                <legend class="border-bottom mb-4">Your personal infos:</legend>#}
@@ -42,12 +42,9 @@
 
                     		<!-- <form id="framework_form" method="post"> -->
                     		<div class="col-sm-8">
-                    		<label>Select your skills</label>
+                    		<label>Skills available</label>
                                 </div>
                                 <div class="col-sm-4" style="text-align:right">
-                                <button type="button" title="Add new skills" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                               Add new skills
-                            </button>
 </div>
                                 <div class="col-12 mb-5">
                             {{ form.owned_skills(id="f", type="text", class="form-control form-control-chosen") }}
@@ -63,49 +60,19 @@
                     	</div>
                 </div>
 
-               <div class="form-group">
-                    {{ form.picture.label() }}
-               <div class="custom-file" id="customFile" style=".custom-file-input ~ .custom-file-label::after { content: "Button Text"; }">
-                    {{ form.picture(class="custom-file-input", id="customFile", type="file", accept=".jpg,.jpeg,.gif,.png") }}
-                    <label class="custom-file-label" for="customFile">Choose image</label>
-               </div>
-                    {% if form.picture.errors %}
-                        {% for error in form.picture.errors %}
-                            <span class="text-danger">{{ error }}</span></br>
-                        {% endfor %}
-                    {% endif %}
+
+
                </div>
 
 
 
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Add a skill</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">×</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        {{ form.skills(class="form-control form-control-chosen") }}
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          {{ form.submit(class="btn btn-primary", value="Save" ) }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
 
 
 
 
             </fieldset>
-            <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-            </div>
+
         </form>
     </div>
 
@@ -144,7 +111,7 @@ $('#modal').on('show.bs.modal', function (event) {
 })
 </script>
 
-<script type="text/javascript">
+  <script type="text/javascript">
 
   {#$(".form-control-chosen").attr('disabled', true).trigger("chosen:updated")#}
 
@@ -163,17 +130,11 @@ $('#modal').on('show.bs.modal', function (event) {
       modal.find('.modal-body input').val(recipient)
     })
 
-</script>
-
-<script type="application/javascript">
-    $('input[type="file"]').change(function(e){
-        var fileName = e.target.files[0].name;
-        $('.custom-file-label').html(fileName);
-    });
-</script>
-<!--
+  </script>
+<!-- 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.6/chosen.jquery.min.js"></script>
 
 {% endblock %}

@@ -1,7 +1,13 @@
 {% extends "base.html" %}
+{% from "macros/form_field.html" import form_field %}
+{% block title %}Quiz{% endblock %}
 {% block content %}
 
 <div class="jumbo">
+
+
+
+    {% if (score * 100 / 40) > 75 %}
       <div align="center" class="alert alert-success">
 	<h3>Congragulations.....</h3><br>        
 	You have successfully completed the Quiz.
@@ -9,6 +15,17 @@
         Your Score is: {{score}}
       </div>
     </div>
+    {% else %}
+
+        <div align="center" class="alert alert-danger">
+	<h3>Fail.....</h3><br>
+	You have failed the Quiz.
+	<br>
+        Your Score is: {{score}}
+      </div>
+    </div>
+    {% endif %}
+
 
 
 

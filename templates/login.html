@@ -4,9 +4,39 @@
 {% block content_title %}Log in{% endblock %}
 {% block content %}
 
-<form action="{{ url_for('login', next=request.args.get('next','')) }}" class="form" method="post">
-{{ form_field(form.email) }}
-{{ form_field(form.password) }}
+     <div class="col-sm-6">
+
+<form action="{{ url_for('login', next=request.args.get('next','')) }}" class="" method="post">
+    <div class="form-group">
+    <label class="sr-only" for="exampleInputUser">User</label>
+
+<div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-user"></i></span>            </div>
+
+{{ form.email(class="form-control", id="exampleInputUser",placeholder="Email") }}
+</div>
+    </div>
+
+
+
+    <div class="form-group">
+      <label class="sr-only" for="exampleInputPwd">Password</label>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-key"></i></span></div>
+        {{ form.password(class="form-control", id="password", type="password", placeholder="Password") }}
+
+<div class="input-group-append">
+                            <span class="input-group-text">
+                      <a href="javascript:void(0)" class="hide-password" data-toggle="password" ><i class="fa fa-eye-slash"></i></a>
+                            </span>
+
+    </div>
+
+
+      </div>
+    </div>
+
 <div class="form-group">
 	<div class="col-md-offset-3 col-md-9">
 		<div class="form-check">
@@ -27,4 +57,17 @@
 	</div>
  </div>
 </form>
+     </div>
+
+
+    <script type="javascript">
+    $('[data-toggle="password"]').password({
+  append: 'right',        // can be left or right
+  iconPrefix: 'fa',
+  iconShow: 'fa-eye',
+  iconHide: 'fa-eye-slash',
+  tooltip: 'Show/Hide password',
+  debug: true
+});
+    </script>
 {% endblock %}

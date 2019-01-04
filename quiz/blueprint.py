@@ -2,32 +2,38 @@ import os
 from app import db
 from flask import Flask, session, render_template, url_for, redirect, request, flash, Blueprint
 from flask_login import current_user, login_required
-from models import User
+from models import User, Cskills
+from datetime import datetime
 
 quiz_blueprint = Blueprint('quiz', __name__, template_folder='templates')
 quiz_blueprint.secret_key = os.urandom(24)
 
+# Java questions
 questions = {
-    "1": {"question": "Which city is the capital of Iran?", "options": ["Dhaka", "Kabul", "Tehran", "Istambul"],
-          "answer": "Tehran"},
-    "2": {"question": "What is the human bodys biggest organ?",
-          "options": ['The cerebrum', 'Epidermis', 'Ribs', 'The skin'], "answer": "The skin"},
-    "3": {"question": "Electric current is typically measured in what units?",
-          "options": ['joule', 'Ampere', 'Watt', 'Ohm'], "answer": "Ampere"},
-    "4": {"question": "Who was known as Iron man of India?",
-          "options": ["Govind Ballabh Pant", "Jawaharlal Nehru", "Subhash Chandra Bose", "Sardar Vallabhbhai Patel"],
-          "answer": "Sardar Vallabhbhai Patel"},
-    "5": {"question": "What is the smallest planet in the Solar System?",
-          "options": ["Mercury", "Mars", "Jupitar", "Neptune"], "answer": "Mercury"},
-    "6": {'question': "What is the name of the largest ocean on earth?",
-          "options": ["Atlantic", "Pacafic", "Indian Ocean", "Meditanarian"], "answer": "Pacafic"},
-    "7": {'question': "What country has the second largest population in the world?",
-          "options": ["Indonasia", "America", "India", "China"], "answer": "India"},
-    "8": {'question': "Zurich is the largest city in what country?",
-          "options": ["France", "Spain", "Scotland", "Switzerland"], "answer": "Switzerland"},
-    "9": {'question': "What is the next prime number after 7?", "options": ["13", "9", "17", "11"], "answer": "11"},
-    "10": {'question': "At what temperature is Fahrenheit equal to Centigrade?",
-           "options": ["0 degrees ", "-40 degrees", "213 degrees", "-213 degrees"], "answer": "-40 degrees"}}
+    "1": {"question": "What is correct syntax for main method of a java class?", "options": ["public static int main(String[] args)", "public int main(String[] args)", "public static void main(String[] args)", "None of the above."],
+          "answer": "public static void main(String[] args)"},
+    "2": {"question": "What is the size of short variable?",
+          "options": ['8 bit', '16 bit', '32 bit', '64 bit'], "answer": "16 bit"},
+    "3": {"question": "What is the default value of byte variable?",
+          "options": ['0', '0.0', 'null', 'undefined'], "answer": "0"},
+    "4": {"question": "Which of the following is true about super class?",
+          "options": ["Variables, methods and constructors which are declared private can be accessed only by the members of the super class.", "Variables, methods and constructors which are declared protected can be accessed by any subclass of the super class.",
+                      "Variables, methods and constructors which are declared public in the superclass can be accessed by any class.", "All of the above."],
+          "answer": "All of the above."},
+    "5": {"question": "What is local variable?",
+          "options": ["Variables defined inside methods, constructors or blocks are called local variables.", "Variables defined outside methods, constructors or blocks are called local variables.",
+                      "Static variables defined outside methods, constructors or blocks are called local variables.", "None of the above."], "answer": "Variables defined inside methods, constructors or blocks are called local variables."},
+    "6": {'question': "Can be constructor be made private?",
+          "options": ["True.", "False."], "answer": "True."},
+    "7": {'question': "What is true about a final class?",
+          "options": ["class declard final is a final class.", "Final classes are created so the methods implemented by that class cannot be overridden.",
+                      "It can't be inherited.", "All of the above."], "answer": "All of the above."},
+    "8": {'question': "What invokes a thread's run() method?",
+          "options": ["JVM invokes the thread's run() method when the thread is initially executed.", "Main application running the thread.",
+                      "start() method of the thread class.", "None of the above."], "answer": "JVM invokes the thread's run() method when the thread is initially executed."},
+    "9": {'question': "Deletion is faster in LinkedList than ArrayList.", "options": ["True.", "False."], "answer": "True."},
+    "10": {'question': "Which of the following is Faster, StringBuilder or StringBuffer?",
+           "options": ["StringBuilder ", "StringBuffer", "Both of the above.", "None of the above."], "answer": "StringBuilder"}}
 
 
 @quiz_blueprint.route('/', methods=['GET', 'POST'])
@@ -49,7 +55,15 @@ def index():
                   redirect(url_for('homepage'))
                 else:
                   print('render score')
-                  return render_template("score.html", score=session["mark"])
+                  score = session["mark"]
+                  perc = score * 100 / 40
+                  if perc > 70:
+                      print(User.objects(email=current_user.email, kskills__skillName__exact="java"))
+                      x = User.objects(email=current_user.email).first()
+                      print(x.name)
+                      # utente = User.ob
+                      x(kskills__skillName__exact="java").update(set__kskills__skillName_status=True, set__kskills__skillName_date=datetime.now())
+                  return render_template("score.html", score=session["mark"], perc=score * 100 / 40)
 
     if "question" not in session:
         session["question"] = "1"
