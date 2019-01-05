@@ -1,12 +1,13 @@
 from datetime import datetime
 import bcrypt, copy, os, random, secrets
-from flask import render_template, request, flash, redirect, url_for, render_template
+from flask import render_template, request, flash, redirect, url_for, render_template, make_response
 from flask_login import login_user, current_user, login_required, logout_user
 from app import db, app, login_manager, mail
 from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, SearchSkillsForm
 from models import User, Company, Cskills
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Message
+import pdfkit
 
 
 @app.route('/')
@@ -245,3 +246,18 @@ def profileView(id):
     form.username.data = profile.username
     form.email.data = profile.email
     return render_template('profile_view.html', form=form, profile=profile)
+
+@app.route('/profile/<id>/cv')
+def pdf_template(id):
+    profile = User.objects(id=id).first()
+
+    rendered = render_template('pdf_template.html', profile=profile)
+
+    css = ['templates/css/cv_pdf_template.css']
+    pdf = pdfkit.from_string(rendered, False, css=css)
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+
+    return response

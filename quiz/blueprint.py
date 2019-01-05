@@ -58,11 +58,8 @@ def index():
                   score = session["mark"]
                   perc = score * 100 / 40
                   if perc > 70:
-                      print(User.objects(email=current_user.email, kskills__skillName__exact="java"))
-                      x = User.objects(email=current_user.email).first()
-                      print(x.name)
-                      # utente = User.ob
-                      x(kskills__skillName__exact="java").update(set__kskills__skillName_status=True, set__kskills__skillName_date=datetime.now())
+                      User.objects(email=current_user.email, kskills__skillName__exact="java").update_one(
+                          set__kskills__S__status=True, set__kskills__S__date=datetime.now())
                   return render_template("score.html", score=session["mark"], perc=score * 100 / 40)
 
     if "question" not in session:
@@ -76,6 +73,9 @@ def index():
     elif session["question"] in session:
         mark = session["mark"]
         score = mark
+    # elif request.method == "GET":
+    #     score=0
+    #     return (render_template('score.html', score=score))
     return render_template("quiz.html",
                            question=questions[session["question"]]["question"],
                            question_number=session["question"],

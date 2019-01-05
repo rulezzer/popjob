@@ -2,7 +2,7 @@
 {% from "macros/form_field.html" import form_field %}
 {% block title %}Profilo{% endblock %}
 {% block content %}
-<div class="content-section">
+<div class="content-section shadow-sm p-3 mb-5 bg-white rounded">
 	<div class="media">
         <img class="account-img rounded-circle mx-auto d-block" src="{{ image_file }}" height="150" width="150" >
         <div class="media-body">
@@ -17,7 +17,7 @@
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
 {#                <legend class="border-bottom mb-4">Your personal infos:</legend>#}
-                <div class="form-group shadow-sm p-3 mb-5 bg-white rounded">
+                <div class="form-group ">
 
                     {{ form.username.label(class="form-control-label") }}
                     <div class="input-group">
