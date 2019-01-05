@@ -11,9 +11,9 @@
       <form class="form" action="." method="post">
         <div align="center"><h3>{{ question_number }}.  {{ question }}</h3></div>
    	<br>
-	<div align="center">
+	<div align="left">
         {% for option in options  %}
-        <input name="answer" type="submit" class="btn btn-primary" value="{{option}}">&nbsp;&nbsp;
+        <input name="answer" type="submit" class="alert alert-primary" value="{{option}}">&nbsp;&nbsp;
         {% endfor %}
         </div>
       </form>

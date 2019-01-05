@@ -41,31 +41,9 @@ class RegistrationForm(Form):
     ])
     confirm = PasswordField('Repeat Password')
 
-
-class AddNewSkill(FlaskForm):
-    skills = SelectMultipleField('Programming Language',
-                                 choices=(
-                                     ('Programming Languages', (
-                                         ('asm', 'Assembly'),
-                                         ('c', 'C'),
-                                         ('cpp', 'C++'),
-                                         ('java', 'Java'),
-                                         ('js', 'JavaScript'),
-                                         ('sql', 'SQL'),
-                                         ('plsql', 'PL/SQL'),
-                                         ('python', 'Python'),
-                                         ('php', 'PHP'),
-                                         ('ruby', 'Ruby'),
-                                         ('swift', 'Swift')
-                                     )),
-                                     ('Soft Skills', (
-                                         ('pm', 'Project Management'),
-                                         ('tw', 'Teamwork'),
-                                         ('potato', 'Potato')
-                                     ))
-                                 ), render_kw={"data-placeholder": "Select all your skills..."})
-    submit = SubmitField('Update')
-
+class RemoveSkillsForm(FlaskForm):
+    skillRemove = SelectField('')
+    submit = SubmitField('Remove')
 
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired(), validators.Length(min=2, max=20)])

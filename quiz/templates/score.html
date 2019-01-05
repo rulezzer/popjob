@@ -7,22 +7,22 @@
 
 
 
-    {% if score %}
-    {% if (score * 100 / 40) > 75 %}
+    {% if session["mark"] %}
+    {% if (session["mark"] * 100 / 40) > 75 %}
       <div align="center" class="alert alert-success">
-	<h3>Congragulations.....</h3><br>        
+	<h3>Congratulations...</h3><br>
 	You have successfully completed the Quiz.
 	<br>
-        Your Score is: {{score}}
+        Your Score is: {{session["mark"]}}
       </div>
     </div>
     {% else %}
 
         <div align="center" class="alert alert-danger">
-	<h3>Fail.....</h3><br>
+	<h3>Failed...</h3><br>
 	You have failed the Quiz.
 	<br>
-        Your Score is: {{score}}
+        Your Score is: {{session["mark"]}}
       </div>
     </div>
     {% endif %}

@@ -45,10 +45,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{% block branding %}PopJob{% endblock %}</a>
+                <a class="navbar-brand" href="/index">{% block branding %}PopJob{% endblock %}</a>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="nav-item"><a href="/" class="nav-link">Home</a>
                         <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Registration
@@ -93,6 +92,20 @@
                         {% endif %}
                     </ul>
 
+                    {% endblock %}
+
+                    <!-- here is the second sidebar showing the badges gained -->
+
+                    {% block sidebar2 %}
+                    Badge Conseguiti
+                    <ul class="card bg-light card-body mb-3 nav flex-column">
+                        {% for verificaflagskill in current_user.kskills %}
+                            {% if verificaflagskill.status %}
+                                <a href="#" class="badge badge-danger"> {{ verificaflagskill.skillName }}</a><br/>
+                            {% endif %}
+                        {% endfor %}
+
+                    </ul>
                     {% endblock %}
                 </div>
             </div>

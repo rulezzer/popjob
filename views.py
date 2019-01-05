@@ -1,15 +1,16 @@
 from datetime import datetime
-import bcrypt, copy, os, random, secrets
+import bcrypt, os, secrets
 from flask import render_template, request, flash, redirect, url_for, render_template, make_response
 from flask_login import login_user, current_user, login_required, logout_user
-from app import db, app, login_manager, mail
-from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, SearchSkillsForm
+from app import app, login_manager, mail
+from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, SearchSkillsForm, RemoveSkillsForm
 from models import User, Company, Cskills
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Message
 import pdfkit
 
 
+@app.route('/index')
 @app.route('/')
 def homepage():
     name = request.args.get('name')
@@ -125,35 +126,65 @@ def save_picture(form_picture):
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-
     form = UpdateAccountForm()
+    formR = RemoveSkillsForm()
+    # skform = AddNewSkill()
+    # if skform.submit.data:
+    #     User.objects(email=current_user.email).update_one(set__skills=current_user.skills + skform.skills.data, upsert=True)
+    #     flash('Thanks for updating', 'success')
+
+    if formR.validate_on_submit():
+        print(formR.errors)
+        print("def remove 1")
+        xd = User.objects(email=current_user.email)
+        print("def remove 2")
+        if xd.update(pull__kskills__skillName=formR.skillRemove.data):
+            print(formR.skillRemove.data)
+            print("def remove 3")
+            return render_template('profile.html', formR=formR, form=form)
+        return render_template('profile.html', formR=formR, form=form)
+
 
     if form.validate_on_submit():
         if form.picture.data:
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
-        # User.objects(email=current_user.email).update_one(set__skills=form.skills.to_dict() + form.owned_skills.to_dict(), upsert=True)
 
-        flag=False #flag to avoid the multiple generation of flashes
+        flag = False
         for lol in form.skills.data:
             if User.objects(email=current_user.email, kskills__skillName__ne=lol):
-                flag=True
                 utente = User.objects(email=current_user.email).get()
                 utente.kskills.append(Cskills(skillName=lol, status=False, date=datetime.now()))
                 utente.save()
-            else:
-                flash(lol+' is already present', 'danger')
-        if flag:
-            flash('Thanks for updating', 'success')
+                flag=True
 
+            else:
+                flash(lol + ' is already present', 'danger')
+        if flag:
+            flash('Thanks for updating','success')
+
+
+        # Save the skills that the user already have and the new ones.
         return redirect(url_for('profile'))
     elif request.method == 'GET':
-        form.owned_skills.data = [y.skillName for y in current_user.kskills ] #take the skillName from mongodb and pass them to the form
+
+
+        print(formR.errors)
+        print("skill remove")
+        formR.skillRemove = form.owned_skills
+
+        print("ciao")
+        form.owned_skills.data = [y.skillName for y in
+                                  current_user.kskills] # take the skillName from mongodb and pass them to the form
+        formR.skillRemove.data = form.owned_skills.data
+        print(formR.skillRemove.data)
         form.username.data = current_user.username
         form.email.data = current_user.email
         image_file = url_for('static', filename='img/' + current_user.image_file)
-        return render_template('profile.html', title='Account', image_file=image_file, form=form)
+
+
+        return render_template('profile.html', title='Account', image_file=image_file, form=form, formR=formR)
 
 
 @app.route('/validate', methods=['GET', 'POST'])
