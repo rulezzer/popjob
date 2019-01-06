@@ -1,223 +1,146 @@
-{% extends "base.html" %}
-{% from "macros/form_field.html" import form_field %}
-{% block title %}Profilo{% endblock %}
-{% block content %}
-<div class="content-section shadow-sm p-3 mb-5 bg-white rounded">
-	<div class="media">
-        <img class="account-img rounded-circle mx-auto d-block" src="{{ image_file }}" height="150" width="150" >
-        <div class="media-body">
-			<h2 class="account-heading">Benvenuto, {{ current_user.name }}</h2>
-			<p class="text-secondary">email: {{ current_user.email }}</p>
-			<h3>I tuoi dati:</h3>
-		</div>
-	</div>
-	<!--FORM-->
-<div class="content-section">
-        <form method="POST" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-{#                <legend class="border-bottom mb-4">Your personal infos:</legend>#}
-                <div class="form-group ">
-
-                    {{ form.username.label(class="form-control-label") }}
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">@</div>
-                        </div>
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
-                    {% endif %}
-                    </div>
-                    <h2>Competenze</h2>
-
-                    <div class="container">
-                    	<div class="row">
-
-                    		<!-- <form id="framework_form" method="post"> -->
-                    		<div class="col-sm-8">
-                    		<label>Select your skills</label>
-                                </div>
-                                <div class="col-sm-4" style="text-align:right">
-                                    {#  Button delete skills with open popup window #}
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal2">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                    </button>
-                                <button type="button" title="Add new skills" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                               Add new skills
-                            </button>
-</div>
-                                <div class="col-12 mb-5">
-                            {{ form.owned_skills(id="f", type="text", class="form-control form-control-chosen") }}
-                                            <!-- Button trigger modal -->
+import wtforms
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, FieldList, RadioField, \
+    SelectField
+from wtforms_components import SelectMultipleField
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms.validators import ValidationError
+from flask_login import current_user
+from models import User
+from flask_wtf import FlaskForm
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from bson import json_util
+import json
 
 
-                    		<!-- </form> -->
+class LoginForm(Form):
+    email = StringField("Email", validators=[validators.DataRequired()])
+    password = PasswordField("Password", validators=[validators.DataRequired()])
+    remember_me = BooleanField("Remember me?", default=True)
+    submit = SubmitField('Invia')
 
 
-                    		</div>
+def validate(self):
+    if not super(LoginForm, self).validate():
+        return False
+
+        self.email = User.authenticate(self.email.data, self.password.data)
+        if not self.user:
+            self.email.errors.append("Invalid email or password.")
+            return False
+
+        return True
 
 
-                    	</div>
-                </div>
+class RegistrationForm(Form):
+    name = StringField('Name', [validators.Regexp('^[A-Za-z]', message="Name must contains only letters")])
+    surname = StringField('Surname', [validators.Length(min=4, max=25)])
+    email = StringField('Email', validators=[validators.Length(min=6, max=35)]) #da cambiare con EmailField
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Password must match')
+    ])
+    confirm = PasswordField('Repeat Password')
 
-               <div class="form-group">
-                    {{ form.picture.label() }}
-               <div class="custom-file" id="customFile" style=".custom-file-input ~ .custom-file-label::after { content: "Button Text"; }">
-                    {{ form.picture(class="custom-file-input", id="customFile", type="file", accept=".jpg,.jpeg,.gif,.png") }}
-                    <label class="custom-file-label" for="customFile">Choose image</label>
-               </div>
-                    {% if form.picture.errors %}
-                        {% for error in form.picture.errors %}
-                            <span class="text-danger">{{ error }}</span></br>
-                        {% endfor %}
-                    {% endif %}
-               </div>
+class RemoveSkillsForm(FlaskForm):
+    skillRemove = SelectField('')
+    option = StringField()
+    submitR = SubmitField('Remove')
 
+class UpdateAccountForm(FlaskForm):
+    username = StringField('Username', validators=[validators.DataRequired(), validators.Length(min=2, max=20)])
+    email = StringField('Email')
+    picture = FileField()
+    owned_skills = SelectMultipleField('Programming Language',
+                                       choices=(
+                                           ('Programming Languages', (
+                                               ('asm', 'Assembly'),
+                                               ('c', 'C'),
+                                               ('cpp', 'C++'),
+                                               ('java', 'Java'),
+                                               ('js', 'JavaScript'),
+                                               ('sql', 'SQL'),
+                                               ('plsql', 'PL/SQL'),
+                                               ('python', 'Python'),
+                                               ('php', 'PHP'),
+                                               ('ruby', 'Ruby'),
+                                               ('swift', 'Swift')
+                                           )),
+                                           ('Soft Skills', (
+                                               ('pm', 'Project Management'),
+                                               ('tw', 'Teamwork'),
+                                               ('potato', 'Potato')
+                                           ))
+                                       ), render_kw={"data-placeholder": "Select all your skills..."})
 
+    skills = owned_skills
+    submitNS = SubmitField('Update')
+    submitU = SubmitField('Update')
 
+    def validate_username(self, username):
+        if username.data != current_user.username:
+            user = User.objects(username=username.data).first()
+            if user:
+                raise ValidationError('That username is taken. Please choose a different one.')
 
-                <!-- Modal pop Up Window -->
-                            <div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Remove a skill</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                      <span aria-hidden="true">×</span>
-                                    </button>
-                                  </div>
-
-
-                                  <div class="modal-body">
-                                  <form method="POST">
-                                  {{ formR.hidden_tag() }}
-                                         <select id="single" class="form-control form-control-chosen">
-                                              {% for xx in formR.skillRemove.data %}
-                                                  <option>
-                                                    {{ xx }}
-                                                  </option>
-                                                {% endfor %}
-                                         </select>
-                                      </div>
-
-                                      <div class="modal-footer">
-                                          <div class="form-group">
-    {#                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
-                                            {{ formR.submit(class="btn btn-danger", value="Remove" ) }}
-
-                                          </div>
-                                      </div>
-                                    </form>
-
-                                </div>
-                              </div>
-                            </div>
-
-
-
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Add a skill</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">×</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        {{ form.skills(class="form-control form-control-chosen") }}
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          {{ form.submit(class="btn btn-primary", value="Save" ) }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            user = User.objects(email=email.data).first()
+            if user:
+                raise ValidationError('That email is taken. Please choose a different one.')
 
 
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[validators.DataRequired()])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, email):
+        user = User.objects(email=email.data).first()
+        if user is None:
+            raise ValidationError('There is no account with that email. You must register first.')
 
 
-            </fieldset>
-            <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-            </div>
-        </form>
-    </div>
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[validators.DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[validators.DataRequired(), validators.EqualTo('password')])
+    submit = SubmitField('Reset Password')
 
 
+class QuizForm(FlaskForm):
+    option1 = RadioField()
+    submit = SubmitField('send answers')
 
 
-	<!-- END FORM-->
-</div>
-<script type="text/javascript">
-	$('#myModal').on('shown.bs.modal', function () {
-  $('#myInput').trigger('focus')
-})
+class SearchSkillsForm(FlaskForm):
+    skills = SelectField(u'Skills', choices=[(' ', ' '), ('asm', 'Assembly'), ('java', 'Java'),
+                                             ('php', 'PHP'), ('plsql', 'PLSQL'),
+                                             ('cpp', 'C++'), ('c', 'C'),
+                                             ('sql', 'SQL'), ('python', 'Python'),
+                                             ('ruby', 'Ruby'), ('swift', 'Swift')],
+                         render_kw={"data-placeholder": "Select a Programming Language"})
+    submit = SubmitField('Search')
 
 
-$('#modal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
-})
+class ResultsSkills():
+    resultskills = SelectField(u'Skills', choices=[('asm', 'Assembly'), ('java', 'Java'),
+                                                   ('php', 'PHP'), ('plsql', 'PLSQL'),
+                                                   ('cpp', 'C++'), ('c', 'C'),
+                                                   ('sql', 'SQL'), ('python', 'Python'),
+                                                   ('ruby', 'Ruby'), ('swift', 'Swift')])
 
 
-
-
-	$('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
-})
-</script>
-
-<script type="text/javascript">
-
-  {#$(".form-control-chosen").attr('disabled', true).trigger("chosen:updated")#}
-
-
-    $('#myModal').on('shown.bs.modal', function () {
-      $('#myInput').trigger('focus')
-    })
-
-    $('#exampleModal').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget) // Button that triggered the modal
-      var recipient = button.data('whatever') // Extract info from data-* attributes
-      // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-      // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-      var modal = $(this)
-      modal.find('.modal-title').text('New message to ' + recipient)
-      modal.find('.modal-body input').val(recipient)
-    })
-
-</script>
-
-<script type="application/javascript">
-    $('input[type="file"]').change(function(e){
-        var fileName = e.target.files[0].name;
-        $('.custom-file-label').html(fileName);
-    });
-</script>
-<!--
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script> -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.6/chosen.jquery.min.js"></script>
-
-{% endblock %}
+class RegCompanyForm(Form):
+    nation_type = SelectField(u'Nation', choices=[(' ', ' '), ('Italia', 'Italia'), ('Stati Uniti', 'Stati Uniti'),
+                                                  ('Regno Unito', 'Regno Unito'), ('Giappone', 'Giappone')])
+    NameCompany = StringField('Name Company',
+                              validators=[validators.Regexp('^[A-Za-z]', message="Name must contains only letters")])
+    PartitaIva = StringField('PartitaIva', validators=[validators.Length(min=6, max=35)])
+    Telefono = StringField('Telefono')
+    email = StringField('email', validators=[validators.Length(min=6, max=35)])
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Password must match')
+    ])
+    confirm = PasswordField('Repeat Password')
+    NameResponsabile = StringField('NameResponsabile')
+    SurnameResponsabile = StringField('SurnameResponsabile', )

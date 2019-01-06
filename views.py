@@ -3,7 +3,8 @@ import bcrypt, os, secrets
 from flask import render_template, request, flash, redirect, url_for, render_template, make_response
 from flask_login import login_user, current_user, login_required, logout_user
 from app import app, login_manager, mail
-from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, SearchSkillsForm, RemoveSkillsForm
+from forms import LoginForm, RegistrationForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, RegCompanyForm, \
+    SearchSkillsForm, RemoveSkillsForm
 from models import User, Company, Cskills
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Message
@@ -27,7 +28,8 @@ def user_registration():
             existing_user = User.objects(email=form.email.data).first()
             if existing_user is None:
                 hashpass = generate_password_hash(form.password.data, method='sha256')
-                user_creation = User(email=form.email.data, name=form.name.data, surname=form.surname.data, password=hashpass).save()
+                user_creation = User(email=form.email.data, name=form.name.data, surname=form.surname.data,
+                                     password=hashpass).save()
                 print('3')
                 login_user(user_creation)
                 # User.objects(email=user_creation.email).update(set__username=str(user_creation.id)) #set the username equal to the id
@@ -55,25 +57,25 @@ def user_registration():
 #         flash('Your email has been confirmed! ', 'success')
 #         return redirect(url_for('login'))
 #     return render_template('profile.html')
-    # try:
-    #     confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    #     email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
-    # except:
-    #     flash('The confirmation link is invalid or has expired.', 'error')
-    #     return redirect(url_for('users.login'))
-    #
-    # user = User.query.filter_by(email=email).first()
-    #
-    # if user.email_confirmed:
-    #     flash('Account already confirmed. Please login.', 'info')
-    # else:
-    #     user.email_confirmed = True
-    #     user.email_confirmed_on = datetime.now()
-    #     db.session.add(user)
-    #     db.session.commit()
-    #     flash('Thank you for confirming your email address!')
-    #
-    # return redirect(url_for('recipes.index'))
+# try:
+#     confirm_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+#     email = confirm_serializer.loads(token, salt='email-confirmation-salt', max_age=3600)
+# except:
+#     flash('The confirmation link is invalid or has expired.', 'error')
+#     return redirect(url_for('users.login'))
+#
+# user = User.query.filter_by(email=email).first()
+#
+# if user.email_confirmed:
+#     flash('Account already confirmed. Please login.', 'info')
+# else:
+#     user.email_confirmed = True
+#     user.email_confirmed_on = datetime.now()
+#     db.session.add(user)
+#     db.session.commit()
+#     flash('Thank you for confirming your email address!')
+#
+# return redirect(url_for('recipes.index'))
 
 
 # def send_confirmation_email(user):
@@ -127,25 +129,17 @@ def save_picture(form_picture):
 @login_required
 def profile():
     form = UpdateAccountForm()
-    formR = RemoveSkillsForm()
-    # skform = AddNewSkill()
-    # if skform.submit.data:
-    #     User.objects(email=current_user.email).update_one(set__skills=current_user.skills + skform.skills.data, upsert=True)
-    #     flash('Thanks for updating', 'success')
+    formRM = RemoveSkillsForm()
+    select = request.form.get('skillRemoveSelect')
 
-    if formR.validate_on_submit():
-        print(formR.errors)
-        print("def remove 1")
-        xd = User.objects(email=current_user.email)
-        print("def remove 2")
-        if xd.update(pull__kskills__skillName=formR.skillRemove.data):
-            print(formR.skillRemove.data)
-            print("def remove 3")
-            return render_template('profile.html', formR=formR, form=form)
-        return render_template('profile.html', formR=formR, form=form)
+    if request.method == 'POST' and request.form['btn'] == 'Remove':
+        print("removing skill " + select)
 
+        User.objects(email=current_user.email).update(pull__kskills__skillName=select)
+        return redirect(url_for('profile'))
 
-    if form.validate_on_submit():
+    if request.method == 'POST' and request.form['btn'] == 'Update':
+        # if form.validate_on_submit(): in realta funziona?
         if form.picture.data:
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
@@ -157,34 +151,28 @@ def profile():
                 utente = User.objects(email=current_user.email).get()
                 utente.kskills.append(Cskills(skillName=lol, status=False, date=datetime.now()))
                 utente.save()
-                flag=True
+                flag = True
 
             else:
                 flash(lol + ' is already present', 'danger')
         if flag:
-            flash('Thanks for updating','success')
+            flash('Thanks for updating', 'success')
 
-
-        # Save the skills that the user already have and the new ones.
+            # Save the skills that the user already have and the new ones.
         return redirect(url_for('profile'))
     elif request.method == 'GET':
 
+        formRM.skillRemove = form.owned_skills
 
-        print(formR.errors)
-        print("skill remove")
-        formR.skillRemove = form.owned_skills
-
-        print("ciao")
         form.owned_skills.data = [y.skillName for y in
-                                  current_user.kskills] # take the skillName from mongodb and pass them to the form
-        formR.skillRemove.data = form.owned_skills.data
-        print(formR.skillRemove.data)
+                                  current_user.kskills]  # take the skillName from mongodb and pass them to the form
+        formRM.skillRemove.data = form.owned_skills.data
+        print(formRM.skillRemove.data)
         form.username.data = current_user.username
         form.email.data = current_user.email
         image_file = url_for('static', filename='img/' + current_user.image_file)
 
-
-        return render_template('profile.html', title='Account', image_file=image_file, form=form, formR=formR)
+        return render_template('profile.html', title='Account', image_file=image_file, form=form, formRM=formRM)
 
 
 @app.route('/validate', methods=['GET', 'POST'])
@@ -234,7 +222,6 @@ def reset_token(token):
     return render_template('reset_token.html', title='Reset Password', form=form)
 
 
-
 # Skill's search
 @app.route('/searchskills', methods=['GET', 'POST'])
 @login_required
@@ -269,14 +256,16 @@ def company_registration():
 
 @app.route('/profile/<id>', methods=['POST', 'GET'])
 def profileView(id):
-    form=UpdateAccountForm()
+    form = UpdateAccountForm()
     profile = User.objects(id=id).first()
     print(id)
     print(profile.name)
-    form.owned_skills.data = [y.skillName for y in profile.kskills]  # take the skillName from mongodb and pass them to the form
+    form.owned_skills.data = [y.skillName for y in
+                              profile.kskills]  # take the skillName from mongodb and pass them to the form
     form.username.data = profile.username
     form.email.data = profile.email
     return render_template('profile_view.html', form=form, profile=profile)
+
 
 @app.route('/profile/<id>/cv')
 def pdf_template(id):

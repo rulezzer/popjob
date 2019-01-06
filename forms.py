@@ -43,7 +43,8 @@ class RegistrationForm(Form):
 
 class RemoveSkillsForm(FlaskForm):
     skillRemove = SelectField('')
-    submit = SubmitField('Remove')
+    option = StringField()
+    submitR = SubmitField('Remove')
 
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[validators.DataRequired(), validators.Length(min=2, max=20)])
@@ -72,7 +73,8 @@ class UpdateAccountForm(FlaskForm):
                                        ), render_kw={"data-placeholder": "Select all your skills..."})
 
     skills = owned_skills
-    submit = SubmitField('Update')
+    submitNS = SubmitField('Update')
+    submitU = SubmitField('Update')
 
     def validate_username(self, username):
         if username.data != current_user.username:
