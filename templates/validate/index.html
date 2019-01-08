@@ -10,7 +10,7 @@
 {#    Qui mi vado a prendere tutte le schill che l'utente ha dichiarato di possedere#}
     <select class="form-control form-control-chosen-required">
     {% for lol in current_user.kskills %}
-        <option> {{ lol.skillName }}</option>
+        <option {% if lol.skillName != 'java' %} disabled {% endif %}> {{ lol.skillName }}</option>
     {% endfor %}
     </select>
 
@@ -27,7 +27,7 @@
     <br><br>
     <a href="{{ url_for('quiz.index' )}}" class="btn btn-primary btn-lg " onclick="disableButton(this)"  role="button" aria-disabled="{{ stato }}">Go</a>
 
-
+    <br /><br /><p><i>at the time java is the only validation available</i></p>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
     <script>$(".form-control-chosen-required").chosen({disable_search_threshold: 10});</script>
     <script type = 'text / javascript' src = 'http: //code.jquery.com/jquery.min.js'> </script>

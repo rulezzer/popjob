@@ -7,42 +7,42 @@
 <meta name="description" content="The Curriculum Vitae of {{ profile.name }} {{ profile.surname }}."/>
 <meta charset="UTF-8">
 
+
 <link href='http://fonts.googleapis.com/css?family=Rokkitt:400,700|Lato:400,300' rel='stylesheet' type='text/css'>
 
-<!--[if lt IE 9]>
-<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
+
 </head>
 <body id="top">
-<div id="cv" class="instaFade">
+<div id="cv" >
 	<div class="mainDetails">
-		<div id="headshot" class="quickFade">
-			<img src="{{ profile.image_file }}" alt="Alan Smith" />
+		<div id="headshot">
+			<img src="{{ pro_pic }}" alt="{{ profile.name }} {{ profile.surname }}" />
 		</div>
 
 		<div id="name">
-			<h1 class="quickFade delayTwo">{{ profile.name }} {{ profile.surname }}</h1>
-			<h2 class="quickFade delayThree">Job Title</h2>
+			<h1>{{ profile.name }} {{ profile.surname }}</h1>
+			<h2>Job Title</h2>
 		</div>
 
-		<div id="contactDetails" class="quickFade delayFour">
+		<div id="contactDetails">
 			<ul>
 				<li>e: <a href="mailto:{{ profile.email }}" target="_blank">{{ profile.email }}</a></li>
-				<li>w: <a href="http://www.bloggs.com">www.bloggs.com</a></li>
+				<li>u: {{ profile.email }}</li>
 				<li>m: 01234567890</li>
 			</ul>
 		</div>
 		<div class="clear"></div>
 	</div>
 
-	<div id="mainArea" class="quickFade delayFive">
+	<div id="mainArea">
 		<section>
 			<article>
 				<div class="sectionTitle">
 					<h1>Personal Profile</h1>
 				</div>
 
-				<div class="sectionContent">
+				<div class="sectionContent">			<img src="{{ image_file }}" alt="{{ profile.name }} {{ profile.surname }}" />
+
 					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer dolor metus, interdum at scelerisque in, porta at lacus. Maecenas dapibus luctus cursus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim. Vestibulum bibendum mattis dignissim. Proin id sapien quis libero interdum porttitor.</p>
 				</div>
 			</article>
@@ -118,14 +118,5 @@
 
 	</div>
 </div>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-3753241-1");
-pageTracker._initData();
-pageTracker._trackPageview();
-</script>
 </body>
 </html>

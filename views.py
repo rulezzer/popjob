@@ -14,9 +14,6 @@ import pdfkit
 @app.route('/index')
 @app.route('/')
 def homepage():
-    name = request.args.get('name')
-    if not name:
-        name = '<unknown>'
     return render_template('homepage.html')
 
 
@@ -126,6 +123,8 @@ def save_picture(form_picture):
 
 
 @app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile/', methods=['GET', 'POST'])
+@app.route('/profile/me', methods=['GET', 'POST'])
 @login_required
 def profile():
     form = UpdateAccountForm()
@@ -134,17 +133,18 @@ def profile():
 
     if request.method == 'POST' and request.form['btn'] == 'Remove':
         print("removing skill " + select)
-
         User.objects(email=current_user.email).update(pull__kskills__skillName=select)
         return redirect(url_for('profile'))
 
-    if request.method == 'POST' and request.form['btn'] == 'Update':
-        # if form.validate_on_submit(): in realta funziona?
+    elif request.method == 'POST' and request.form['btn'] == 'Update':
         if form.picture.data:
             current_user.image_file = save_picture(form.picture.data)
             User.objects(email=current_user.email).update_one(set__image_file=current_user.image_file, upsert=True)
         User.objects(email=current_user.email).update_one(set__username=form.username.data, upsert=True)
+        return redirect(url_for('profile'))
 
+
+    elif request.method == 'POST' and request.form['btn'] == 'Save':
         flag = False
         for lol in form.skills.data:
             if User.objects(email=current_user.email, kskills__skillName__ne=lol):
@@ -152,7 +152,6 @@ def profile():
                 utente.kskills.append(Cskills(skillName=lol, status=False, date=datetime.now()))
                 utente.save()
                 flag = True
-
             else:
                 flash(lol + ' is already present', 'danger')
         if flag:
@@ -163,11 +162,9 @@ def profile():
     elif request.method == 'GET':
 
         formRM.skillRemove = form.owned_skills
-
         form.owned_skills.data = [y.skillName for y in
                                   current_user.kskills]  # take the skillName from mongodb and pass them to the form
         formRM.skillRemove.data = form.owned_skills.data
-        print(formRM.skillRemove.data)
         form.username.data = current_user.username
         form.email.data = current_user.email
         image_file = url_for('static', filename='img/' + current_user.image_file)
@@ -258,10 +255,7 @@ def company_registration():
 def profileView(id):
     form = UpdateAccountForm()
     profile = User.objects(id=id).first()
-    print(id)
-    print(profile.name)
-    form.owned_skills.data = [y.skillName for y in
-                              profile.kskills]  # take the skillName from mongodb and pass them to the form
+    form.owned_skills.data = [y.skillName for y in profile.kskills]  # take the skillName from mongodb and pass them to the form
     form.username.data = profile.username
     form.email.data = profile.email
     return render_template('profile_view.html', form=form, profile=profile)
@@ -270,12 +264,12 @@ def profileView(id):
 @app.route('/profile/<id>/cv')
 def pdf_template(id):
     profile = User.objects(id=id).first()
+    pro_pic = url_for('static', filename='img/' + profile.image_file)
 
-    rendered = render_template('pdf_template.html', profile=profile)
 
+    rendered = render_template('pdf_template.html', profile=profile, pro_pic=pro_pic)
     css = ['templates/css/cv_pdf_template.css']
     pdf = pdfkit.from_string(rendered, False, css=css)
-
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'

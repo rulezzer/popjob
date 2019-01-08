@@ -23,29 +23,21 @@
 
 			<h1>Results</h1>
 
-
-
 		   	{% for lol in x %}
-
 		   		<div class="card text-white bg-warning mb-3" style="max-width: 20rem;">
 				  <div class="card-header " style="display: inline" >
                       <a href="./profile/{{ lol.id }}" style="display: inline; text-align: right"><b>{{ lol.name }} {{ lol.surname }}</b>
                        <div style="display: inline; float:right"><i class="fas fa-link" ></i></div>
                       </a>
-
                   </div>
 				  	<div class="card-footer">
       					<small class="text-secondary">{{ lol.email }}</small>
     				</div>
 				</div>
-
-
-		
 		    {% endfor %}
 		
 		
 		    {% if not x%}
-		    	
 		    	<div class="alert alert-warning" role="alert">
 				  No Results!
 				</div>
